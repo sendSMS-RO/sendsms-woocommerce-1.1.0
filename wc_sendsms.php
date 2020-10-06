@@ -464,6 +464,7 @@ function wc_sendsms_campaign()
     $having = [];
     if (!empty($_GET['perioada_start'])) {
         $where .= ' AND post_date >= %s';
+        print_r("AIC");
         $filters[] = $_GET['perioada_start'];
     }
     if (!empty($_GET['perioada_final'])) {
@@ -474,9 +475,19 @@ function wc_sendsms_campaign()
         $having[] = 'order_total >= %d';
         $filters[] = (double)$_GET['suma'];
     }
-    if (!empty($_GET['judet'])) {
-        $having[] = '_billing_city = %s';
-        $filters[] = $_GET['judet'];
+    if (!empty($_GET['judete'])) {
+        $having[] = '_billing_state IN (';
+        $elem = count($having) - 1;
+        for($i = 0; $i < count($_GET['judete']); $i++)
+        {
+            $having[$elem] .= '\'%s\'';
+            if($i < count($_GET['judete']) - 1)
+            {
+                $having[$elem] .= ', ';
+            }
+            $filters[] = str_replace("id_", "", $_GET['judete'][$i]);
+        }
+        $having[$elem] .= ')';
     }
 
     $query .= $where.' group by p.ID';
@@ -517,7 +528,6 @@ function wc_sendsms_campaign()
     }
     $phones = array_unique($phones);
 
-    print_r($billing_states);
 
     ?>
     <div class="wrap">
@@ -570,7 +580,7 @@ function wc_sendsms_campaign()
                                             $lenght = count($_GET['judete']);
                                             for($j = 0; $j < $lenght; $j++)
                                             {
-                                                if(strcmp($_GET['judete'][$j], "id_" . $$billing_states[$i][2]) === 0)
+                                                if(strcmp($_GET['judete'][$j], "id_" . $billing_states[$i]->meta_value) === 0)
                                                 {
                                                     $selected = true;
                                                 }
@@ -1100,4 +1110,13 @@ function wc_sendsms_clean_diacritice($string)
         "\xe2\x80\x93");
     $cleanLetters = array("A", "a", "A", "a", "I", "i", "S", "s", "T", "t", "S", "s", "T", "t", "a", " ", "-");
     return str_replace($balarii, $cleanLetters, $string);
+}
+
+function console_log($output, $with_script_tags = true) {
+    $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) . 
+');';
+    if ($with_script_tags) {
+        $js_code = '<script>' . $js_code . '</script>';
+    }
+    echo $js_code;
 }
