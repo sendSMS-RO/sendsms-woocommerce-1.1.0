@@ -517,6 +517,8 @@ function wc_sendsms_campaign()
     }
     $phones = array_unique($phones);
 
+    print_r($billing_states);
+
     ?>
     <div class="wrap">
         <h2><?=__('SendSMS - Campanie', 'wc_sendsms')?></h2>
@@ -557,15 +559,28 @@ function wc_sendsms_campaign()
                         </p>
                     </div>
                     <div style="width: 48%; float: left;">
-                        <p><?=__('Județ facturare:', 'wc_sendsms')?>
-                            <select name="judet">
-                                <option value="">- <?=__('toate', 'wc_sendsms')?> -</option>
+                        <p><?=__('Județ facturare (lasă gol pentru a selecta toate judetele):', 'wc_sendsms')?>
+                            <select id="judete_selectate" name="judete[]" multiple="multiple" style="width:80%;max-width:25em;">
                                 <?php
-                                if (!empty($billing_states)) :
-                                    foreach ($billing_states as $state) :
+                                    for($i = 0; $i < count($billing_states); $i++)
+                                    {
+                                        $selected = false;
+                                        if(isset($_GET['judete']))
+                                        {
+                                            $lenght = count($_GET['judete']);
+                                            for($j = 0; $j < $lenght; $j++)
+                                            {
+                                                if(strcmp($_GET['judete'][$j], "id_" . $$billing_states[$i][2]) === 0)
+                                                {
+                                                    $selected = true;
+                                                }
+                                            }
+                                        }
                                         ?>
-                                        <option value="<?=$state->meta_value?>" <?=isset($_GET['judet']) && $_GET['judet']==$state->meta_value?'selected="selected"':''?>><?=$state->meta_value?></option>
-                                    <?php endforeach; endif; ?>
+                                            <option value="<?="id_" . $billing_states[$i]->meta_value?>" <?=$selected?'selected="selected"':''?>><?=$billing_states[$i]->meta_value?></option>
+                                        <?php
+                                    }
+                                ?>
                             </select>
                         </p>
                     </div>
