@@ -1022,7 +1022,7 @@ function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_HEADER, 0);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_URL, 'https://hub.sendsms.ro/json?action=message_send&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message));
+    curl_setopt($curl, CURLOPT_URL, 'https://hub.sendsms.ro/json?action=message_send_gdpr&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=true');
     curl_setopt($curl, CURLOPT_HTTPHEADER, array("Connection: keep-alive"));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
@@ -1048,6 +1048,7 @@ function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 
         )
     );
 }
+
 
 function wc_sendsms_validate_phone($phone)
 {
