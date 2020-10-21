@@ -915,7 +915,7 @@ function wc_sendsms_order_status_changed($order_id, $checkout = null)
                 '{shipping_last_name}' => wc_sendsms_clean_diacritice($order->shipping_last_name),
                 '{order_number}' => $order_id,
                 '{order_date}' => date('d.m.Y', strtotime($order->order_date)),
-                '{order_total}' => $order->get_total()
+                '{order_total}' => number_format($order->get_total(), wc_get_price_decimals(), ',', '')
             );
             foreach ($replace as $key => $value) {
                 $message = str_replace($key, $value, $message);
