@@ -1045,9 +1045,14 @@ function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 
 {
     global $wpdb;
     $curl = curl_init();
+
+    $useragent = $_SERVER['HTTP_USER_AGENT'];
+
+    curl_setopt($curl, CURLOPT_USERAGENT, "SendSMS.RO API Agent for " . $useragent);
+    curl_setopt($curl, CURLOPT_REFERER, get_site_url());
     curl_setopt($curl, CURLOPT_HEADER, 0);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_URL, 'https://hub.sendsms.ro/json?action=message_send_gdpr&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=true');
+    curl_setopt($curl, CURLOPT_URL, 'https://api.sendsms.ro/json?action=message_send_gdpr&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=true');
     curl_setopt($curl, CURLOPT_HTTPHEADER, array("Connection: keep-alive"));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 
