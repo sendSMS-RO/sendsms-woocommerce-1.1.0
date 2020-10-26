@@ -50,4 +50,4 @@ Update api
 Posibilitatea de a selecta multiple judete / produse
 Bug fixes
 = 1.1.1 =
-Compatibility with marketplace
+Compatibilitate cu marketplace

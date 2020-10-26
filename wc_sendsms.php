@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: SendSMS - WooCommerce
+Plugin Name: SendSMS
 Plugin URI: http://www.sendsms.ro
 Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
 Version: 1.1.1
