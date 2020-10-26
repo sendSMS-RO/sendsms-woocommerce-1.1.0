@@ -1,11 +1,10 @@
 <?php
 /*
 Plugin Name: SendSMS
-Plugin URI: http://www.sendsms.ro
+Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
 Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
 Version: 1.1.1
 Author: sendSMS
-Author URI: http://www.sendsms.ro
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: wc_sendsms
