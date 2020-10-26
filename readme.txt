@@ -45,5 +45,7 @@ Acest modul necesita sa aveti instalat WooCommerce.
 6. Trimitere SMS din cadrul unei comenzi
 
 == Changelog ==
-1.0.0
-Lansare modul
+1.1.0
+Update api
+Posibilitatea de a selecta multiple judete / produse
+Bug fixes
