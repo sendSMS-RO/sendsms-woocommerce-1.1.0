@@ -1,9 +1,9 @@
 === SendSMS - WooCommerce ===
-Contributors: neamtua
+Contributors: neamtua, Temepest74
 Tags: sms,woocommerce
 Requires at least: 4.4
 Tested up to: 5.5.1
-Stable tag: trunk
+Stable tag: 1.1.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,7 +45,9 @@ Acest modul necesita sa aveti instalat WooCommerce.
 6. Trimitere SMS din cadrul unei comenzi
 
 == Changelog ==
-1.1.0
+= 1.1.0 =
 Update api
 Posibilitatea de a selecta multiple judete / produse
 Bug fixes
+= 1.1.1 =
+Compatibility with marketplace
