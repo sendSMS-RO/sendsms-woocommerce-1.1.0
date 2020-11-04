@@ -3,7 +3,7 @@
 Plugin Name: SendSMS
 Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
 Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
-Version: 1.1.1
+Version: 1.2.0
 Author: sendSMS
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Text Domain: wc_sendsms
 $pluginDir = plugin_dir_path(__FILE__);
 $pluginDirUrl = plugin_dir_url(__FILE__);
 global $wc_sendsms_db_version;
-$wc_sendsms_db_version = '1.1.1';
+$wc_sendsms_db_version = '1.2.0';
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     return;
@@ -81,8 +81,10 @@ function wc_sendsms_load_scripts()
     wp_enqueue_script('datepickerdefault', trailingslashit(plugin_dir_url(__FILE__)).'datepicker/picker.js', array('jquery'));
     wp_enqueue_script('datepickerdefaultdate', trailingslashit(plugin_dir_url(__FILE__)).'datepicker/picker.date.js', array('jquery'));
     wp_enqueue_script('wcsendsms', trailingslashit(plugin_dir_url(__FILE__)).'wc_sendsms.js', array('jquery'));
-    wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css' );
-	wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js', array('jquery') );
+
+    # script & style for jquery
+    wp_enqueue_style('select2', trailingslashit(plugin_dir_url(__FILE__)).'jquery/select2/select2.min.css');
+	wp_enqueue_script('select2', trailingslashit(plugin_dir_url(__FILE__)).'jquery/select2/select2.min.js', array('jquery') );
  
 	// please create also an empty JS file in your theme directory and include it too
 	wp_enqueue_script('js_for_select2', trailingslashit(plugin_dir_url(__FILE__)).'forselect2.js', array( 'jquery', 'select2' ) ); 
@@ -241,6 +243,27 @@ function wc_sendsms_admin_init()
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
+        'wc_sendsms_plugin_options_send_to_owner',
+        __('Trimitere SMS la fiecare comanda noua', 'wc_sendsms'),
+        'wc_sendsms_settings_display_send_to_owner',
+        'wc_sendsms_plugin',
+        'wc_sendsms_plugin_login'
+    );
+    add_settings_field(
+        'wc_sendsms_plugin_options_send_to_owner_number',
+        __('Numarul de telefon unde vor fi trimise mesajele', 'wc_sendsms'),
+        'wc_sendsms_settings_display_send_to_owner_number',
+        'wc_sendsms_plugin',
+        'wc_sendsms_plugin_login'
+    );
+    add_settings_field(
+        'wc_sendsms_plugin_options_send_to_owner_content',
+        __('Mesajul ce va fi trimis', 'wc_sendsms'),
+        'wc_sendsms_settings_display_send_to_owner_content',
+        'wc_sendsms_plugin',
+        'wc_sendsms_plugin_login'
+    );
+    add_settings_field(
         'wc_sendsms_plugin_options_optout',
         __('Opt-out în coș', 'wc_sendsms'),
         'wc_sendsms_settings_display_optout',
@@ -360,7 +383,7 @@ function wc_sendsms_test()
             if (!empty($username) && !empty($password) && !empty($from)) {
                 $phone = wc_sendsms_validate_phone($_POST['wc_sendsms_phone']);
                 if (!empty($phone)) {
-                    wc_sendsms_send($username, $password, $phone, $_POST['wc_sendsms_message'], $from, 'test');
+                    wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['wc_sendsms_message']), $from, 'test');
                     echo '<div class="notice notice-success is-dismissible">
                     <p>' . __('Mesajul a fost trimis', 'wc_sendsms') . '</p>
                 </div>';
@@ -463,16 +486,15 @@ function wc_sendsms_campaign()
     $having = [];
     if (!empty($_GET['perioada_start'])) {
         $where .= ' AND post_date >= %s';
-        print_r("AIC");
-        $filters[] = $_GET['perioada_start'];
+        $filters[] = wc_sendsms_sanitize_event_time($_GET['perioada_start']);
     }
     if (!empty($_GET['perioada_final'])) {
         $where .= ' AND post_date <= %s';
-        $filters[] = $_GET['perioada_final'];
+        $filters[] = wc_sendsms_sanitize_event_time($_GET['perioada_final']);
     }
     if (!empty($_GET['suma'])) {
         $having[] = 'order_total >= %d';
-        $filters[] = (double)$_GET['suma'];
+        $filters[] = wc_sendsms_sanitize_float($_GET['suma']);
     }
     if (!empty($_GET['judete'])) {
         $having[] = '_billing_state IN (';
@@ -484,7 +506,7 @@ function wc_sendsms_campaign()
             {
                 $having[$elem] .= ', ';
             }
-            $filters[] = str_replace("id_", "", $_GET['judete'][$i]);
+            $filters[] = str_replace("id_", "", sanitize_text_field($_GET['judete'][$i]));
         }
         $having[$elem] .= ')';
     }
@@ -535,10 +557,10 @@ function wc_sendsms_campaign()
             <input type="hidden" name="page" value="wc_sendsms_campaign" />
             <div style="width: 100%; clear: both;">
                 <div style="width: 48%; float: left;">
-                    <p><?=__('Perioada', 'wc_sendsms')?> <input type="text" class="wcsendsmsdatepicker" name="perioada_start" value="<?=isset($_GET['perioada_start'])?$_GET['perioada_start']:''?>" /> - <input type="text" class="wcsendsmsdatepicker" name="perioada_final" value="<?=isset($_GET['perioada_final'])?$_GET['perioada_final']:''?>" /></p>
+                    <p><?=__('Perioada', 'wc_sendsms')?> <input type="text" class="wcsendsmsdatepicker" name="perioada_start" value="<?=isset($_GET['perioada_start'])?wc_sendsms_sanitize_event_time($_GET['perioada_start']):''?>" /> - <input type="text" class="wcsendsmsdatepicker" name="perioada_final" value="<?=isset($_GET['perioada_final'])?wc_sendsms_sanitize_event_time($_GET['perioada_final']):''?>" /></p>
                 </div>
                 <div style="width: 48%; float: left">
-                    <p><?=__('Suma minimă pe comandă:', 'wc_sendsms')?> <input type="number" name="suma" value="<?=isset($_GET['suma'])?(int)$_GET['suma']:'0'?>" /></p>
+                    <p><?=__('Suma minimă pe comandă:', 'wc_sendsms')?> <input type="number" name="suma" value="<?=isset($_GET['suma'])?wc_sendsms_sanitize_float($_GET['suma']):'0'?>" /></p>
                 </div>
                 <div style="width: 100%; clear: both;">
                     <div style="width: 48%; float: left;" class="mySelect">
@@ -560,7 +582,7 @@ function wc_sendsms_campaign()
                                             }
                                         }
                                         ?>
-                                            <option value="<?="id_" . $products[$i][2]?>" <?=$selected?'selected="selected"':''?>><?=$products[$i][0] . " - " . $products[$i][1]?></option>
+                                            <option value="<?="id_" . esc_attr($products[$i][2])?>" <?=$selected?'selected="selected"':''?>><?=esc_attr($products[$i][0]) . " - " . esc_attr($products[$i][1])?></option>
                                         <?php
                                     }
                                 ?>
@@ -586,7 +608,7 @@ function wc_sendsms_campaign()
                                             }
                                         }
                                         ?>
-                                            <option value="<?="id_" . $billing_states[$i]->meta_value?>" <?=$selected?'selected="selected"':''?>><?=$billing_states[$i]->meta_value?></option>
+                                            <option value="<?="id_" . esc_attr($billing_states[$i]->meta_value)?>" <?=$selected?'selected="selected"':''?>><?=esc_attr($billing_states[$i]->meta_value)?></option>
                                         <?php
                                     }
                                 ?>
@@ -688,7 +710,7 @@ function wc_sendsms_ajax_send() {
         foreach ($_POST['phones'] as $phone) {
             $phone = wc_sendsms_validate_phone($phone);
             if (!empty($phone)) {
-                wc_sendsms_send($username, $password, $phone, $_POST['content'], $from, 'campaign');
+                wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'campaign');
             }
         }
         echo __('Mesajele au fost trimise', 'wc_sendsms');
@@ -772,6 +794,18 @@ function wc_sendsms_settings_display_simulation()
     <input id="wc_sendsms_settings_simulation" name="wc_sendsms_plugin_options[simulation]" type="checkbox" value="1" '.(!empty($simulation)?'checked="checked"':'').' />';
 }
 
+function wc_sendsms_settings_display_send_to_owner()
+{
+    $options = get_option('wc_sendsms_plugin_options');
+    if (!empty($options) && is_array($options) && isset($options['send_to_owner'])) {
+        $send_to_owner = $options['send_to_owner'];
+    } else {
+        $send_to_owner = '';
+    }
+    echo '
+    <input id="wc_sendsms_settings_send_to_owner" name="wc_sendsms_plugin_options[send_to_owner]" type="checkbox" value="1" '.(!empty($send_to_owner)?'checked="checked"':'').' />';
+}
+
 function wc_sendsms_settings_display_simulation_number()
 {
     $options = get_option('wc_sendsms_plugin_options');
@@ -784,6 +818,18 @@ function wc_sendsms_settings_display_simulation_number()
     <input id="wc_sendsms_settings_simulation_number" name="wc_sendsms_plugin_options[simulation_number]" type="text" value="'.$number.'" style="width: 400px;" />';
 }
 
+function wc_sendsms_settings_display_send_to_owner_number()
+{
+    $options = get_option('wc_sendsms_plugin_options');
+    if (!empty($options) && is_array($options) && isset($options['send_to_owner_number'])) {
+        $number = $options['send_to_owner_number'];
+    } else {
+        $number = '';
+    }
+    echo '
+    <input id="wc_sendsms_settings_send_to_owner_number" name="wc_sendsms_plugin_options[send_to_owner_number]" type="text" value="'.$number.'" style="width: 400px;" />';
+}
+
 function wc_sendsms_settings_display_optout()
 {
     $options = get_option('wc_sendsms_plugin_options');
@@ -794,6 +840,40 @@ function wc_sendsms_settings_display_optout()
     }
     echo '
     <input id="wc_sendsms_settings_optout" name="wc_sendsms_plugin_options[optout]" type="checkbox" value="1" '.(!empty($optout)?'checked="checked"':'').' />';
+}
+
+function wc_sendsms_settings_display_send_to_owner_content()
+{
+    echo '<p>' . __('Variabile disponibile:', 'wc_sendsms') . ' {billing_first_name}, {billing_last_name}, {shipping_first_name}, {shipping_last_name}, {order_number}, {order_date}, {order_total}</p><br />';
+    $options = get_option('wc_sendsms_plugin_options');
+    if (!empty($options) && is_array($options) && isset($options['send_to_owner_content'])) {
+        $content = $options['send_to_owner_content'];
+    } else {
+        $content = "";
+    }
+
+    echo '<div style="width: 100%; clear: both;">
+            <div style="width: 45%; float: left">
+                <textarea id="wc_sendsms_settings_send_to_owner_content" name="wc_sendsms_plugin_options[send_to_owner_content]" style="width: 400px; height: 100px;" maxlength="160" class="wc_sendsms_content">' . (!empty($content) ? $content : '') . '</textarea>
+                <p>' . (160 - strlen($content)) . ' ' . __('caractere rămase', 'wc_sendsms') . '</p>
+            </div>
+            <div style="width: 45%; float: left">
+            </div>
+        </div>';
+
+    echo '
+                <script type="text/javascript">
+                    var wc_sendsms_content = document.getElementsByClassName("wc_sendsms_settings_send_to_owner_content");
+                    for (var i = 0; i < wc_sendsms_content.length; i++) {
+                        var wc_sendsms_element = wc_sendsms_content[i];
+                        wc_sendsms_element.onkeyup = function() {
+                            var text_length = this.value.length;
+                            var text_remaining = 160 - text_length;
+                            this.nextElementSibling.innerHTML = text_remaining + " ' . __('caractere rămase', 'wc_sendsms') . '";
+                        };
+                    }
+                </script>
+            ';
 }
 
 function wc_sendsms_settings_display_enabled()
@@ -816,7 +896,13 @@ function wc_sendsms_settings_display_content()
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['content'])) {
         $content = $options['content'];
-        $enabled = $options['enabled'];
+        if(isset($options['enabled']))
+        {
+            $enabled = $options['enabled'];
+        }else
+        {
+            $enabled = array();
+        }
     } else {
         $content = array();
         $enabled = array();
@@ -887,38 +973,16 @@ function wc_sendsms_order_status_changed($order_id, $checkout = null)
         $content = array();
         $enabled = array();
     }
-    if (!empty($options) && is_array($options) && isset($options['username'])) {
-        $username = $options['username'];
-    } else {
-        $username = '';
-    }
-    if (!empty($options) && is_array($options) && isset($options['password'])) {
-        $password = $options['password'];
-    } else {
-        $password = '';
-    }
-    if (!empty($options) && is_array($options) && isset($options['from'])) {
-        $from = $options['from'];
-    } else {
-        $from = '';
-    }
+
+    wc_sendsms_get_account_info($username, $password, $from, $options);
 
     if (!empty($username) && !empty($password)) {
         if (isset($content['wc-' . $status]) && !empty($content['wc-' . $status]) && isset($enabled['wc-'.$status])) {
             # replace variables
             $message = $content['wc-' . $status];
-            $replace = array(
-                '{billing_first_name}' => wc_sendsms_clean_diacritice($order->billing_first_name),
-                '{billing_last_name}' => wc_sendsms_clean_diacritice($order->billing_last_name),
-                '{shipping_first_name}' => wc_sendsms_clean_diacritice($order->shipping_first_name),
-                '{shipping_last_name}' => wc_sendsms_clean_diacritice($order->shipping_last_name),
-                '{order_number}' => $order_id,
-                '{order_date}' => date('d.m.Y', strtotime($order->order_date)),
-                '{order_total}' => number_format($order->get_total(), wc_get_price_decimals(), ',', '')
-            );
-            foreach ($replace as $key => $value) {
-                $message = str_replace($key, $value, $message);
-            }
+            wc_sendsms_replace_characters($message, $order, $order_id);
+
+            wc_sendsms_console_log($message, true);
 
             # check if simulation is on and number is entered
             if (!empty($options) && is_array($options) && isset($options['content']) && isset($options['simulation']) && !empty($options['simulation_number'])) {
@@ -936,6 +1000,32 @@ function wc_sendsms_order_status_changed($order_id, $checkout = null)
         }
     }
 }
+
+# magic - 2
+add_action( 'woocommerce_new_order', 'wc_sendsms_new_order'); 
+
+function wc_sendsms_new_order($order_id) { 
+    $options = get_option('wc_sendsms_plugin_options');
+
+    if(isset($options) && $options['send_to_owner'] && $options['send_to_owner_number'] && $options['send_to_owner_content']){
+
+        $order = new WC_Order($order_id);
+
+        wc_sendsms_get_account_info($username, $password, $from, $options);
+
+        if (!empty($username) && !empty($password)) {
+            $phone = wc_sendsms_validate_phone($options['send_to_owner_number']);
+            $message = $options['send_to_owner_content'];
+
+            wc_sendsms_replace_characters($message, $order, $order_id);
+
+            if (!empty($phone)) {
+                # send sms
+                wc_sendsms_send($username, $password, $phone, $message, $from);
+            }
+        }
+    }   
+}; 
 
 # afisare casuta de trimitere sms in comenzi
 add_action('add_meta_boxes', 'wc_sendsms_order_details_meta_box');
@@ -962,7 +1052,7 @@ function wc_sendsms_order_details_sms_box($post)
         <textarea name="wc_sendsms_content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 100%; height: 100px;" maxlength="160"></textarea>
         <p>160 <?=__('caractere rămase', 'wc_sendsms')?></p>
     </div>
-    <p><button type="submit" class="button tips" id="wc_sendsms_send_single"><?=__('Trimite mesajul', 'wc_sendms')?></button></p>
+    <p><button type="submit" class="button" id="wc_sendsms_send_single"><?=__('Trimite mesajul', 'wc_sendms')?></button></p>
     <script type="text/javascript">
         var wc_sendsms_content = document.getElementsByClassName("wc_sendsms_content");
         for (var i = 0; i < wc_sendsms_content.length; i++) {
@@ -1027,10 +1117,10 @@ function wc_sendsms_ajax_send_single() {
         }
         $phone = wc_sendsms_validate_phone($_POST['phone']);
         if (!empty($phone)) {
-            wc_sendsms_send($username, $password, $phone, $_POST['content'], $from, 'single order');
+            wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'single order');
             global $woocommerce;
             $order = new WC_Order($_POST['order']);
-            $order->add_order_note(__('Mesaj SMS trimis către '.$phone.': '.$_POST['content'],'wc_sendsms'));
+            $order->add_order_note(__('Mesaj SMS trimis către '.$phone.': ' . sanitize_textarea_field($_POST['content']),'wc_sendsms'));
         }
         echo __('Mesajul a fost trimis', 'wc_sendsms');
     } else {
@@ -1043,20 +1133,11 @@ add_action('wp_ajax_wc_sendsms_single', 'wc_sendsms_ajax_send_single');
 function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 'order')
 {
     global $wpdb;
-    $curl = curl_init();
 
-    $useragent = $_SERVER['HTTP_USER_AGENT'];
-
-    curl_setopt($curl, CURLOPT_USERAGENT, "SendSMS.RO API Agent for " . $useragent);
-    curl_setopt($curl, CURLOPT_REFERER, get_site_url());
-    curl_setopt($curl, CURLOPT_HEADER, 0);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($curl, CURLOPT_URL, 'https://api.sendsms.ro/json?action=message_send_gdpr&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=true');
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array("Connection: keep-alive"));
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-    $status = curl_exec($curl);
-    $status = json_decode($status, true);
+    $args['headers'] = [
+        'url' => get_site_url()
+    ];
+    $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=message_send_gdpr&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=true', $args)), true);
 
     # history
     $table_name = $wpdb->prefix . 'wcsendsms_history';
@@ -1068,9 +1149,9 @@ function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 
                 VALUES ( %s, %s, %s, %s, %s, %s, %s)
             ",
             $phone,
-            isset($status['status'])?$status['status']:'',
-            isset($status['message'])?$status['message']:'',
-            isset($status['details'])?$status['details']:'',
+            isset($results['status'])?$results['status']:'',
+            isset($results['message'])?$results['message']:'',
+            isset($results['details'])?$results['details']:'',
             $message,
             $type,
             date('Y-m-d H:i:s')
@@ -1116,11 +1197,78 @@ function wc_sendsms_clean_diacritice($string)
     return str_replace($balarii, $cleanLetters, $string);
 }
 
-function console_log($output, $with_script_tags = true) {
-    $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) . 
-');';
-    if ($with_script_tags) {
-        $js_code = '<script>' . $js_code . '</script>';
+function wc_sendsms_sanitize_event_time($event_time) {
+    // General sanitization, to get rid of malicious scripts or characters
+    $event_time = sanitize_text_field($event_time);
+    $event_time = filter_var($event_time, FILTER_SANITIZE_STRING);
+
+    // Validation to see if it is the right format
+    if (wc_sendsms_my_validate_date($event_time)){
+        return $event_time;
+    }
+    // default value, to return if checks have failed
+    return "";
+}
+
+function wc_sendsms_my_validate_date($date, $format = 'Y-m-d') {
+    // Create the format date
+    $d = DateTime::createFromFormat($format, $date);
+
+    // Return the comparison    
+    return $d && $d->format($format) === $date;
+}
+
+function wc_sendsms_sanitize_float( $input ) {
+    return filter_var($input, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+}
+
+function wc_sendsms_console_log($output, $woocommerce = false, $with_script_tags = true) {
+    if(!$woocommerce)
+    {
+        $js_code = 'console.log(' . json_encode($output, JSON_HEX_TAG) . ');';
+        if ($with_script_tags) {
+            $js_code = '<script>' . $js_code . '</script>';
+        }
+    }else
+    {
+        $log = new WC_Logger();
+        $log_entry = print_r( $output, true );
+        $log->log( 'test-123', $log_entry );
     }
     echo $js_code;
+}
+
+function wc_sendsms_get_account_info(&$username, &$password, &$from, $options)
+{
+    if (!empty($options) && is_array($options) && isset($options['username'])) {
+        $username = $options['username'];
+    } else {
+        $username = '';
+    }
+    if (!empty($options) && is_array($options) && isset($options['password'])) {
+        $password = $options['password'];
+    } else {
+        $password = '';
+    }
+    if (!empty($options) && is_array($options) && isset($options['from'])) {
+        $from = $options['from'];
+    } else {
+        $from = '';
+    }
+}
+
+function wc_sendsms_replace_characters(&$message, $order, $order_id)
+{
+    $replace = array(
+        '{billing_first_name}' => wc_sendsms_clean_diacritice($order->billing_first_name),
+        '{billing_last_name}' => wc_sendsms_clean_diacritice($order->billing_last_name),
+        '{shipping_first_name}' => wc_sendsms_clean_diacritice($order->shipping_first_name),
+        '{shipping_last_name}' => wc_sendsms_clean_diacritice($order->shipping_last_name),
+        '{order_number}' => $order_id,
+        '{order_date}' => date('d-m-Y', strtotime($order->order_date)),
+        '{order_total}' => number_format($order->get_total(), wc_get_price_decimals(), ',', '')
+    );
+    foreach ($replace as $key => $value) {
+        $message = str_replace($key, $value, $message);
+    }
 }
