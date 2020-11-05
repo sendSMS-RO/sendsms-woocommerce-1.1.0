@@ -3,7 +3,7 @@
 Plugin Name: SendSMS
 Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
 Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
-Version: 1.2.0
+Version: 1.2.1
 Author: sendSMS
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Text Domain: wc_sendsms
 $pluginDir = plugin_dir_path(__FILE__);
 $pluginDirUrl = plugin_dir_url(__FILE__);
 global $wc_sendsms_db_version;
-$wc_sendsms_db_version = '1.2.0';
+$wc_sendsms_db_version = '1.2.1';
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     return;
@@ -115,7 +115,8 @@ add_action('woocommerce_after_order_notes', 'wc_sendsms_optout');
 function wc_sendsms_optout_update_order_meta($orderId)
 {
     if (isset($_POST['wc_sendsms_optout'])) {
-        update_post_meta($orderId, 'wc_sendsms_optout', esc_attr($_POST['wc_sendsms_optout']));
+        wc_sendsms_console_log($_POST['wc_sendsms_optout'], true);
+        update_post_meta($orderId, 'wc_sendsms_optout', wc_sendsms_sanitize_bool($_POST['wc_sendsms_optout']));
     }
 }
 add_action('woocommerce_checkout_update_order_meta', 'wc_sendsms_optout_update_order_meta');
@@ -1271,4 +1272,9 @@ function wc_sendsms_replace_characters(&$message, $order, $order_id)
     foreach ($replace as $key => $value) {
         $message = str_replace($key, $value, $message);
     }
+}
+
+function wc_sendsms_sanitize_bool($data)
+{
+    return $data ? 1 : 0;
 }
