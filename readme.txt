@@ -3,7 +3,7 @@ Contributors: neamtua, Temepest74
 Tags: sms,woocommerce
 Requires at least: 4.4
 Tested up to: 5.5.3
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
