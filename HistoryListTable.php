@@ -141,9 +141,9 @@ class WC_SendSMS_History_List_Table extends WP_List_Table {
 
 
         if (isset($_GET['orderby']) && isset($columns[$_GET['orderby']])) {
-            $orderBy = $_GET['orderby'];
+            $orderBy = sanitize_text_field($_GET['orderby']);
             if (isset($_GET['order']) && in_array(strtolower($_GET['order']), array('asc', 'desc'))) {
-                $order = $_GET['order'];
+                $order = sanitize_text_field($_GET['order']);
             } else {
                 $order = 'ASC';
             }

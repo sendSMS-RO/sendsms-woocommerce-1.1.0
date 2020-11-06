@@ -3,7 +3,7 @@
 Plugin Name: SendSMS
 Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
 Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
-Version: 1.2.1
+Version: 1.2.2
 Author: sendSMS
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Text Domain: wc_sendsms
 $pluginDir = plugin_dir_path(__FILE__);
 $pluginDirUrl = plugin_dir_url(__FILE__);
 global $wc_sendsms_db_version;
-$wc_sendsms_db_version = '1.2.1';
+$wc_sendsms_db_version = '1.2.2';
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     return;
@@ -115,7 +115,6 @@ add_action('woocommerce_after_order_notes', 'wc_sendsms_optout');
 function wc_sendsms_optout_update_order_meta($orderId)
 {
     if (isset($_POST['wc_sendsms_optout'])) {
-        wc_sendsms_console_log($_POST['wc_sendsms_optout'], true);
         update_post_meta($orderId, 'wc_sendsms_optout', wc_sendsms_sanitize_bool($_POST['wc_sendsms_optout']));
     }
 }
@@ -517,7 +516,14 @@ function wc_sendsms_campaign()
         $query .=' HAVING '.implode(' AND ', $having);
     }
 
-    $orders = $wpdb->get_results($wpdb->prepare($query, $filters));
+    
+    if(!empty($filters))
+    {
+        $orders = $wpdb->get_results($wpdb->prepare($query, $filters));
+    }else
+    {
+        $orders = $wpdb->get_results($query);
+    }
     
     if (!empty($_GET['produse'])) 
     {
@@ -529,7 +535,7 @@ function wc_sendsms_campaign()
             {
                 for($i = 0; $i < count($_GET['produse']); $i++)
                 {   
-                    $ok = str_replace("id_", "", $_GET['produse'][$i]) == $id ? true : $ok;
+                    $ok = str_replace("id_", "", sanitize_text_field($_GET['produse'][$i])) == $id ? true : $ok;
                 }
             }
             if(!$ok)
@@ -1120,7 +1126,7 @@ function wc_sendsms_ajax_send_single() {
         if (!empty($phone)) {
             wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'single order');
             global $woocommerce;
-            $order = new WC_Order($_POST['order']);
+            $order = new WC_Order(wc_sendsms_sanitize_float($_POST['order']));
             $order->add_order_note(__('Mesaj SMS trimis către '.$phone.': ' . sanitize_textarea_field($_POST['content']),'wc_sendsms'));
         }
         echo __('Mesajul a fost trimis', 'wc_sendsms');
