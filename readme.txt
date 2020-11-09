@@ -1,53 +1,54 @@
-=== SendSMS - WooCommerce ===
+=== SendSMS ===
 Contributors: neamtua, catalinsendsms
-Tags: sms,woocommerce
+Tags: sms,woocommerce, sendsms
 Requires at least: 4.4
 Tested up to: 5.5.3
 Stable tag: 1.2.3
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
+Use our SMS shipping solution to deliver the right information at the right time. Give your customers a superior experience!
 
 == Description ==
-De ce ati folosi Notificari SMS?
+Why use SMS Notifications?
 
-Simplu – este cel mai simplu si la indemana canal prin care le puteti comunica informatii despre comenzile acestora. SMS-ul ca si metoda de comunicare are o rata de deschidere de 95% si majoritatea sunt citite in 5 secunde de la primirea acestora. S-a constatat ca este de 3 ori mai productiv decat email-ul si pe departe cel mai usor de personalizat. De exemplu, in editarea statusului unui SMS de tip "Comanda finalizata" puteti include un cupon de reducere de 10% la urmatoarea comanda.
+Simple - it is the simplest and handy channel through which you can communicate information about their orders. SMS as a communication method has an opening rate of 95% and most are read within 5 seconds of receiving them. It was found to be 3 times more productive than email and by far the easiest to customize. For example, when the order status changes to "Complete" you can include a 10% discount coupon on the next order.
 
-Nu este nevoie decat sa deveniti creativi, iar vanzarile dumneavoastra va vor depasi asteptarile!
+All you have to do is get creative, and your sales will exceed your expectations!
 
-Oferim o varietate de statusuri comenzi pentru o comunicare neintrerupta cu clientii dumneavoastra.
+We offer a variety of order statuses for uninterrupted communication with your customers.
 
-Caracteristici:
+Characteristics:
 
-* Usor de instalat
-* Usor de personalizat
-* Detalii comanda: numar comanda, status comanda
-* Setari extinse
-* Functioneaza cu WooCommerce 2.0+
-* Toate versiunile de WordPress 4.0+ sunt suportate
-* Posibilitatea de a trimite un SMS test catre orice numar (aveti posibilitatatea sa previzualizati notificarea ce urmeaza sa fie expediata)
-* Posibilitatea de a trimite mesaje selectiv catre oricare dintre clientii care au plasat comenzi pe site-ul dvs.
+* Easy to install
+* Easy to personalize
+* Order details: order number, order status
+* Extended settings
+* Compatible with WooCommerce 2.0+
+* All versions of WordPress 4.0+ are supported
+* Possibility to send a test SMS to any number (you have the possibility to preview the notification to be sent)
+* Ability to selectively send messages to any of the customers who have placed orders on your site.
 
 == Installation ==
-Acest modul necesita sa aveti instalat WooCommerce.
+This module requires you to have WooCommerce installed.
 
-1. Dezarhivati si urcati folderul wc_sendsms in folderul /wp-content/plugins/
-2. Activati plugin-ul din sectiunea Plugins din admin-ul WordPress
-3. Configurati modulul din sectiunea SendsSMS -> Configurare
+1. Unzip and upload the wc_sendsms folder to the folder /wp-content/plugins/
+2. Activate the plugin in the Plugins section of the WordPress admin
+3. Configure the module in the section SendSMS -> Configurare
 
 == Screenshots ==
-1. Informatii generale
-2. Configurare modul
-3. Istoric trimiteri
-4. Trimitere campanii
-5. Trimitere test
-6. Trimitere SMS din cadrul unei comenzi
+1. General informations
+2. Module configuration
+3. SMS History
+4. Send campaigns
+5. Send test
+6. Send SMS within an order
 
 == Changelog ==
-= 1.1.0 =
-Update api
-Posibilitatea de a selecta multiple judete / produse
+= 1.2.2 = 
+Possibility to receive message with each new order
 Bug fixes
-= 1.1.1 =
-Compatibilitate cu marketplace
+= 1.1.0 =
+API update
+Possibility to select multiple counties / products
+Bug fixes
