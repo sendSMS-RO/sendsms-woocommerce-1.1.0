@@ -989,8 +989,6 @@ function wc_sendsms_order_status_changed($order_id, $checkout = null)
             $message = $content['wc-' . $status];
             wc_sendsms_replace_characters($message, $order, $order_id);
 
-            wc_sendsms_console_log($message, true);
-
             # check if simulation is on and number is entered
             if (!empty($options) && is_array($options) && isset($options['content']) && isset($options['simulation']) && !empty($options['simulation_number'])) {
                 # generate valid phone number
@@ -1240,7 +1238,7 @@ function wc_sendsms_console_log($output, $woocommerce = false, $with_script_tags
     {
         $log = new WC_Logger();
         $log_entry = print_r( $output, true );
-        $log->log( 'test-123', $log_entry );
+        $log->log( 'sendsms', $log_entry );
     }
     echo $js_code;
 }
