@@ -1,5 +1,5 @@
 === SendSMS - WooCommerce ===
-Contributors: neamtua, Temepest74
+Contributors: neamtua, catalinsendsms
 Tags: sms,woocommerce
 Requires at least: 4.4
 Tested up to: 5.5.3
