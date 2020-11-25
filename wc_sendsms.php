@@ -305,6 +305,21 @@ function wc_sendsms_login()
     ?>
     <div class="wrap">
         <h2><?=__('SendSMS - Date autentificare', 'wc_sendsms')?></h2>
+        <h3><?php
+            $options = get_option('wc_sendsms_plugin_options');
+            $username = "";
+            $password = "";
+            $from = "";
+            wc_sendsms_get_account_info($username, $password, $from, $options);
+
+            $results = json_decode(wp_remote_retrieve_body(wp_remote_get('http://api.sendsms.ro/json?action=user_get_balance&username=' . urlencode($username) . '&password=' . urlencode(trim($password)))), true);
+
+            if($results['status'] >= 0) {
+                echo 'In cont mai ai disponibil ' . $results['details'] . ' euro.';
+            }else {
+                echo 'Modulul nu este configurat corect.';
+            }
+            ?></h3>
         <?php settings_errors(); ?>
         <form action="options.php" method="post">
             <?php settings_fields('wc_sendsms_plugin_options'); ?>
@@ -385,8 +400,8 @@ function wc_sendsms_test()
             $options = get_option('wc_sendsms_plugin_options');
             $username = '';
             $password = '';
-            $short = filter_var($_POST['wc_sendsms_url'] ? $_POST['wc_sendsms_url'] : "false", FILTER_VALIDATE_BOOLEAN);
-            $gdpr = filter_var($_POST['wc_sendsms_gdpr'] ? $_POST['wc_sendsms_gdpr'] : "false", FILTER_VALIDATE_BOOLEAN);
+            $short = filter_var(isset($_POST['wc_sendsms_url']) ? $_POST['wc_sendsms_url'] : "false", FILTER_VALIDATE_BOOLEAN);
+            $gdpr = filter_var(isset($_POST['wc_sendsms_gdpr']) ? $_POST['wc_sendsms_gdpr'] : "false", FILTER_VALIDATE_BOOLEAN);
             if (!empty($options) && is_array($options) && isset($options['username'])) {
                 $username = $options['username'];
             }
@@ -436,8 +451,8 @@ function wc_sendsms_test()
                 <tr>
                     <th scope="row"><?=__('Mesaj', 'wc_sendsms')?></th>
                     <td>
-                        <textarea name="wc_sendsms_message" class="wc_sendsms_content" style="width: 400px; height: 100px;" maxlength="160"></textarea>
-                        <p>160 <?=__('caractere rămase', 'wc_sendsms')?></p>
+                        <textarea name="wc_sendsms_message" class="wc_sendsms_content" style="width: 400px; height: 100px;"></textarea>
+                        <p><?=__("Câmpul este gol", 'wc_sendsms')?></p>
                     </td>
                 </tr>
                 </tbody>
@@ -445,15 +460,34 @@ function wc_sendsms_test()
             <p style="clear: both;"><button type="submit" class="button button-primary button-large" id="wc_sendsms_send_test"><?=__('Trimite mesajul', 'wc_sendsms')?></button></p>
         </form>
         <script type="text/javascript">
-            var wc_sendsms_content = document.getElementsByClassName('wc_sendsms_content');
-            for (var i = 0; i < wc_sendsms_content.length; i++) {
-                var wc_sendsms_element = wc_sendsms_content[i];
-                wc_sendsms_element.onkeyup = function() {
-                    var text_length = this.value.length;
-                    var text_remaining = 160 - text_length;
-                    this.nextElementSibling.innerHTML = text_remaining + ' <?=__('caractere rămase', 'wc_sendsms')?>';
-                };
-            }
+            document.addEventListener("DOMContentLoaded", (event) => {
+                var wc_sendsms_content = document.getElementsByClassName('wc_sendsms_content')[0];
+
+                wc_sendsms_content.addEventListener("input", (event) => 
+                    {
+                        lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                    });
+                wc_sendsms_content.addEventListener("change", (event) => 
+                    {
+                        lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                    });
+                function lenghtCounter(textarea, counter)
+                {
+                    var lenght = textarea.value.length;
+                    var messages = lenght / 160 + 1;
+                    if(lenght > 0)
+                    {
+                        if(lenght % 160 === 0)
+                        {
+                            messages--;
+                        }
+                        counter.textContent = "<?=__('Numărul aproximativ de mesaje: ', 'wc_sendsms');?>" + Math.floor(messages) + " (" + lenght + ")";
+                    }else
+                    {
+                        counter.textContent = "<?=__('Câmpul este gol', 'wc_sendsms');?>";
+                    }
+                }
+            });
         </script>
     </div>
     <?php
@@ -667,8 +701,8 @@ function wc_sendsms_campaign()
         <div style="width: 100%; clear: both; padding-top: 20px;">
             <div style="width: 73%; float: left">
                 <div><?=__('Mesaj:', 'wc_sendsms')?> <br />
-                    <textarea name="content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 90%; height: 250px;" maxlength="160"></textarea>
-                    <p>160 <?=__('caractere rămase', 'wc_sendsms')?></p>
+                    <textarea name="content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 90%; height: 250px;"></textarea>
+                    <p><?=__('Câmpul este gol', 'wc_sendsms')?></p>
                 </div>
             </div>
             <div style="width: 25%; float: left">
@@ -686,18 +720,40 @@ function wc_sendsms_campaign()
                 </select>
             </div>
         </div>
-        <p style="clear: both;"><button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign"><?=__('Trimite mesajul', 'wc_sendsms')?></button></p>
+        <p style="clear: both;">
+            <button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign"><?=__('Trimite mesajul', 'wc_sendsms')?></button>
+            <button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign_estimate_price"><?=__('Estimeaza pretul', 'wc_sendsms')?></button>
+        </p>
     </div>
     <script type="text/javascript">
-        var wc_sendsms_content = document.getElementsByClassName("wc_sendsms_content");
-        for (var i = 0; i < wc_sendsms_content.length; i++) {
-            var wc_sendsms_element = wc_sendsms_content[i];
-            wc_sendsms_element.onkeyup = function() {
-                var text_length = this.value.length;
-                var text_remaining = 160 - text_length;
-                this.nextElementSibling.innerHTML = text_remaining + " <?=__('caractere rămase', 'wc_sendsms')?>";
-            };
-        }
+        document.addEventListener("DOMContentLoaded", (event) => {
+                var wc_sendsms_content = document.getElementsByClassName('wc_sendsms_content')[0];
+                
+                wc_sendsms_content.addEventListener("input", (event) => 
+                    {
+                        lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                    });
+                wc_sendsms_content.addEventListener("change", (event) => 
+                    {
+                        lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                    });
+                function lenghtCounter(textarea, counter)
+                {
+                    var lenght = textarea.value.length;
+                    var messages = lenght / 160 + 1;
+                    if(lenght > 0)
+                    {
+                        if(lenght % 160 === 0)
+                        {
+                            messages--;
+                        }
+                        counter.textContent = "<?=__('Numărul aproximativ de mesaje: ', 'wc_sendsms');?>" + Math.floor(messages) + " (" + lenght + ")";
+                    }else
+                    {
+                        counter.textContent = "<?=__('Câmpul este gol', 'wc_sendsms');?>";
+                    }
+                }
+            });
     </script>
     <?php
 }
@@ -763,7 +819,80 @@ function wc_sendsms_ajax_send() {
     }
     wp_die();
 }
+
 add_action('wp_ajax_wc_sendsms_campaign', 'wc_sendsms_ajax_send');
+
+function wc_sendsms_javascript_estimate_price() { ?>
+    <script type="text/javascript" >
+        jQuery(document).ready(function($) {
+            jQuery('#wc_sendsms_send_campaign_estimate_price').on('click', function() {
+                jQuery('#wc_sendsms_send_campaign_estimate_price').html('<?=__('Se estimeaza...', 'wc_sendsms')?>');
+                jQuery('#wc_sendsms_send_campaign_estimate_price').attr('disabled', 'disabled');
+                var data = {
+                    'action': 'wc_sendsms_estimate_price',
+                    'phones': jQuery('#wc_sendsms_phones').val(),
+                    'content': jQuery('#wc_sendsms_content').val(),
+                };
+                jQuery.post(ajaxurl, data, function(response) {
+                    jQuery('#wc_sendsms_send_campaign_estimate_price').html('<?=__('Estimeaza pretul', 'wc_sendsms')?>');
+                    jQuery('#wc_sendsms_send_campaign_estimate_price').removeAttr('disabled');
+                    alert(response);
+                });
+            });
+        });
+    </script> <?php
+}
+
+add_action('admin_footer', 'wc_sendsms_javascript_estimate_price');
+
+function wc_sendsms_ajax_estimate_price() {
+    if (!empty($_POST['content']) && !empty($_POST['phones'])) {
+        $options = get_option('wc_sendsms_plugin_options');
+        $username = '';
+        $password = '';
+        if (!empty($options) && is_array($options) && isset($options['username'])) {
+            $username = $options['username'];
+        } else {
+            echo __('Nu ați introdus numele de utilizator', 'wc_sendsms');
+            wp_die();
+        }
+        if (!empty($options) && is_array($options) && isset($options['content'])) {
+            $content = $_POST['content'];
+        }
+        if (!empty($options) && is_array($options) && isset($options['password'])) {
+            $password = $options['password'];
+        } else {
+            echo __('Nu ați introdus parola', 'wc_sendsms');
+            wp_die();
+        }
+
+        $lenght = strlen($content);
+        $messages_to_send = 0;
+        $messages = $lenght / 160 + 1;
+        if ($lenght > 0) {
+            if ($lenght % 160 == 0) {
+                $messages--;
+            }
+            $messages_to_send = floor($messages);
+        }
+        $price = 0;
+
+        echo $messages_to_send . " - ";
+
+        foreach ($_POST['phones'] as $phone) {
+            $phone = wc_sendsms_validate_phone($phone);
+            if (!empty($phone)) {
+                $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=route_check_price' .'&username=' . urlencode($username) . '&password=' . urlencode($password) . '&to=' . urlencode($phone))));
+            }
+        }
+        echo __('Pretul estimativ este de ', 'wc_sendsms') . $price;
+    } else {
+        echo __('Trebuie să completați mesajul și să alegeți cel puțin un număr de telefon', 'wc_sendsms');
+    }
+    wp_die();
+}
+
+add_action('wp_ajax_wc_sendsms_estimate_price', 'wc_sendsms_ajax_estimate_price');
 
 function wc_sendsms_history()
 {
@@ -923,26 +1052,12 @@ function wc_sendsms_settings_display_send_to_owner_content()
 
     echo '<div style="width: 100%; clear: both;">
             <div style="width: 45%; float: left">
-                <textarea id="wc_sendsms_settings_send_to_owner_content" name="wc_sendsms_plugin_options[send_to_owner_content]" style="width: 400px; height: 100px;" maxlength="160" class="wc_sendsms_content">' . (!empty($content) ? $content : '') . '</textarea>
-                <p>' . (160 - strlen($content)) . ' ' . __('caractere rămase', 'wc_sendsms') . '</p>
+                <textarea id="wc_sendsms_settings_send_to_owner_content" name="wc_sendsms_plugin_options[send_to_owner_content]" style="width: 400px; height: 100px;" class="wc_sendsms_content">' . (!empty($content) ? $content : '') . '</textarea>
+                <p></p>
             </div>
             <div style="width: 45%; float: left">
             </div>
         </div>';
-
-    echo '
-                <script type="text/javascript">
-                    var wc_sendsms_content = document.getElementsByClassName("wc_sendsms_settings_send_to_owner_content");
-                    for (var i = 0; i < wc_sendsms_content.length; i++) {
-                        var wc_sendsms_element = wc_sendsms_content[i];
-                        wc_sendsms_element.onkeyup = function() {
-                            var text_length = this.value.length;
-                            var text_remaining = 160 - text_length;
-                            this.nextElementSibling.innerHTML = text_remaining + " ' . __('caractere rămase', 'wc_sendsms') . '";
-                        };
-                    }
-                </script>
-            ';
 }
 
 function wc_sendsms_settings_display_enabled()
@@ -1007,8 +1122,8 @@ function wc_sendsms_settings_display_content()
                 <label style="display:block; width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[gdpr]['.$key.']" value="1" '.($gdprChecked?'checked="checked"':'').' />' . __('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms') . '</label>
         <div style="width: 100%; clear: both;">
             <div style="width: 45%; float: left">
-                <textarea id="wc_sendsms_settings_content_'.$key.'" name="wc_sendsms_plugin_options[content]['.$key.']" style="width: 400px; height: 100px;" maxlength="160" class="wc_sendsms_content">'.(isset($content[$key])?$content[$key]:'').'</textarea>
-                <p>'.(160-strlen($content[$key])).' '.__('caractere rămase', 'wc_sendsms').'</p>
+                <textarea id="wc_sendsms_settings_content_'.$key.'" name="wc_sendsms_plugin_options[content]['.$key.']" style="width: 400px; height: 100px;" class="wc_sendsms_content">'.(isset($content[$key])?$content[$key]:'').'</textarea>
+                <p></p>
             </div>
             <div style="width: 45%; float: left">
             ';
@@ -1018,21 +1133,44 @@ function wc_sendsms_settings_display_content()
         echo '
             </div>
         </div>';
+    }
 
-        echo '
+    echo '
                 <script type="text/javascript">
-                    var wc_sendsms_content = document.getElementsByClassName("wc_sendsms_content");
-                    for (var i = 0; i < wc_sendsms_content.length; i++) {
-                        var wc_sendsms_element = wc_sendsms_content[i];
-                        wc_sendsms_element.onkeyup = function() {
-                            var text_length = this.value.length;
-                            var text_remaining = 160 - text_length;
-                            this.nextElementSibling.innerHTML = text_remaining + " '.__('caractere rămase', 'wc_sendsms').'";
+                    document.addEventListener("DOMContentLoaded", (event) => {
+                        var wc_sendsms_content = document.getElementsByClassName(\'wc_sendsms_content\');
+                        
+                        for (var i = 0; i < wc_sendsms_content.length; i++) {
+                            var wc_sendsms_element = wc_sendsms_content[i];
+                            wc_sendsms_element.addEventListener("input", (event) => 
+                                {
+                                    lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                                });
+                            wc_sendsms_element.addEventListener("change", (event) => 
+                                {
+                                    lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                                });
+                            lenghtCounter(wc_sendsms_element, wc_sendsms_element.nextElementSibling);
+                            function lenghtCounter(textarea, counter)
+                            {
+                                var lenght = textarea.value.length;
+                                var messages = lenght / 160 + 1;
+                                if(lenght > 0)
+                                {
+                                    if(lenght % 160 === 0)
+                                    {
+                                        messages--;
+                                    }
+                                    counter.textContent = "' . __('Numărul aproximativ de mesaje: ', 'wc_sendsms') . '" + Math.floor(messages) + " (" + lenght + ")";
+                                }else
+                                {
+                                    counter.textContent = "' . __('Câmpul este gol', 'wc_sendsms') . '";
+                                }
+                            }
                         };
-                    }
+                    });
                 </script>
             ';
-    }
 }
 
 function wc_sendsms_plugin_options_validate($input)
@@ -1147,20 +1285,39 @@ function wc_sendsms_order_details_sms_box($post)
     <p><input type="checkbox" name="wc_sendsms_gdpr" id="wc_sendsms_gdpr"/></p>
     <p><?=__('Mesaj:', 'wc_sendsms')?></p>
     <div>
-        <textarea name="wc_sendsms_content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 100%; height: 100px;" maxlength="160"></textarea>
-        <p>160 <?=__('caractere rămase', 'wc_sendsms')?></p>
+        <textarea name="wc_sendsms_content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 100%; height: 100px;"></textarea>
+        <p><?=__('Câmpul este gol', 'wc_sendsms')?></p>
     </div>
     <p><button type="submit" class="button" id="wc_sendsms_send_single"><?=__('Trimite mesajul', 'wc_sendms')?></button></p>
     <script type="text/javascript">
-        var wc_sendsms_content = document.getElementsByClassName("wc_sendsms_content");
-        for (var i = 0; i < wc_sendsms_content.length; i++) {
-            var wc_sendsms_element = wc_sendsms_content[i];
-            wc_sendsms_element.onkeyup = function() {
-                var text_length = this.value.length;
-                var text_remaining = 160 - text_length;
-                this.nextElementSibling.innerHTML = text_remaining + " <?=__('caractere rămase', 'wc_sendsms')?>";
-            };
-        }
+        document.addEventListener("DOMContentLoaded", (event) => {
+                var wc_sendsms_content = document.getElementsByClassName('wc_sendsms_content')[0];
+                
+                wc_sendsms_content.addEventListener("input", (event) => 
+                    {
+                        lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                    });
+                wc_sendsms_content.addEventListener("change", (event) => 
+                    {
+                        lenghtCounter(event.target || event.srcElement, event.target.nextElementSibling || event.srcElement.nextElementSibling);
+                    });
+                function lenghtCounter(textarea, counter)
+                {
+                    var lenght = textarea.value.length;
+                    var messages = lenght / 160 + 1;
+                    if(lenght > 0)
+                    {
+                        if(lenght % 160 === 0)
+                        {
+                            messages--;
+                        }
+                        counter.textContent = "<?=__('Numărul aproximativ de mesaje: ', 'wc_sendsms');?>" + Math.floor(messages) + " (" + lenght + ")";
+                    }else
+                    {
+                        counter.textContent = "<?=__('Câmpul este gol', 'wc_sendsms');?>";
+                    }
+                }
+            });
     </script>
     <?php
 }
@@ -1242,10 +1399,7 @@ function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 
         'url' => get_site_url()
     ];
 
-    //uncomment to send a message
-    //$results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=message_send'. ($gdpr ? "_gdpr" : "" ) .'&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=' . ($short ? 'true' : 'false'), $args)), true);
-
-    wc_sendsms_console_log('https://api.sendsms.ro/json?action=message_send'. ($gdpr ? "_gdpr" : "" ) .'&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=' . ($short ? 'true' : 'false'), true);
+    $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=message_send'. ($gdpr ? "_gdpr" : "" ) .'&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=' . ($short ? 'true' : 'false'), $args)), true);
 
     # history
     $table_name = $wpdb->prefix . 'wcsendsms_history';
