@@ -3,7 +3,7 @@
 Plugin Name: SendSMS
 Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
 Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
-Version: 1.2.2
+Version: 1.2.4
 Author: sendSMS
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Text Domain: wc_sendsms
 $pluginDir = plugin_dir_path(__FILE__);
 $pluginDirUrl = plugin_dir_url(__FILE__);
 global $wc_sendsms_db_version;
-$wc_sendsms_db_version = '1.2.3';
+$wc_sendsms_db_version = '1.2.4';
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     return;
@@ -250,6 +250,20 @@ function wc_sendsms_admin_init()
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
+        'wc_sendsms_plugin_options_send_to_owner_short',
+        __('Micsorare url?', 'wc_sendsms'),
+        'wc_sendsms_settings_display_send_to_owner_short',
+        'wc_sendsms_plugin',
+        'wc_sendsms_plugin_login'
+    );
+    add_settings_field(
+        'wc_sendsms_plugin_options_send_to_owner_gdpr',
+        __('Adaugare link de dezabonare?', 'wc_sendsms'),
+        'wc_sendsms_settings_display_send_to_owner_gdpr',
+        'wc_sendsms_plugin',
+        'wc_sendsms_plugin_login'
+    );
+    add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_number',
         __('Numarul de telefon unde vor fi trimise mesajele', 'wc_sendsms'),
         'wc_sendsms_settings_display_send_to_owner_number',
@@ -371,6 +385,8 @@ function wc_sendsms_test()
             $options = get_option('wc_sendsms_plugin_options');
             $username = '';
             $password = '';
+            $short = filter_var($_POST['wc_sendsms_url'] ? $_POST['wc_sendsms_url'] : "false", FILTER_VALIDATE_BOOLEAN);
+            $gdpr = filter_var($_POST['wc_sendsms_gdpr'] ? $_POST['wc_sendsms_gdpr'] : "false", FILTER_VALIDATE_BOOLEAN);
             if (!empty($options) && is_array($options) && isset($options['username'])) {
                 $username = $options['username'];
             }
@@ -383,7 +399,7 @@ function wc_sendsms_test()
             if (!empty($username) && !empty($password) && !empty($from)) {
                 $phone = wc_sendsms_validate_phone($_POST['wc_sendsms_phone']);
                 if (!empty($phone)) {
-                    wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['wc_sendsms_message']), $from, 'test');
+                    wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['wc_sendsms_message']), $from, 'test', $short, $gdpr);
                     echo '<div class="notice notice-success is-dismissible">
                     <p>' . __('Mesajul a fost trimis', 'wc_sendsms') . '</p>
                 </div>';
@@ -408,6 +424,14 @@ function wc_sendsms_test()
                 <tr>
                     <th scope="row"><?=__('Număr de telefon', 'wc_sendsms')?></th>
                     <td><input type="text" name="wc_sendsms_phone" style="width: 400px;" /></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?=__('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></th>
+                    <td><input type="checkbox" name="wc_sendsms_url"/></td>
+                </tr>
+                <tr>
+                    <th scope="row"><?=__('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms')?></th>
+                    <td><input type="checkbox" name="wc_sendsms_gdpr"/></td>
                 </tr>
                 <tr>
                     <th scope="row"><?=__('Mesaj', 'wc_sendsms')?></th>
@@ -630,6 +654,16 @@ function wc_sendsms_campaign()
         </form>
         <hr />
         <h3><?=__('Rezultate filtru:', 'wc_sendsms')?> <?=count($phones)?> <?=__('numere de telefon', 'wc_sendsms')?></h3>
+        <div style="display: inline-block; width: 66%; ">
+            <label>
+            <input type="checkbox" id="wc_sendsms_short" class="wc_sendsms_short" name="wc_sendsms_short"/>
+            <?=__('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></label>
+        </div>
+        <div style="display: inline-block; width: 66%; ">
+            <label>
+            <input type="checkbox" id="wc_sendsms_gdpr" class="wc_sendsms_gdpr" name="wc_sendsms_gdpr"/>
+            <?=__('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms')?></label>
+        </div>
         <div style="width: 100%; clear: both; padding-top: 20px;">
             <div style="width: 73%; float: left">
                 <div><?=__('Mesaj:', 'wc_sendsms')?> <br />
@@ -677,9 +711,10 @@ function wc_sendsms_javascript_send() { ?>
                 var data = {
                     'action': 'wc_sendsms_campaign',
                     'phones': jQuery('#wc_sendsms_phones').val(),
-                    'content': jQuery('#wc_sendsms_content').val()
+                    'content': jQuery('#wc_sendsms_content').val(),
+                    'short': jQuery('#wc_sendsms_short').is(":checked"),
+                    'gdpr': jQuery('#wc_sendsms_gdpr').is(":checked")
                 };
-
                 jQuery.post(ajaxurl, data, function(response) {
                     jQuery('#wc_sendsms_send_campaign').html('<?=__('Trimite mesajul', 'wc_sendsms')?>');
                     jQuery('#wc_sendsms_send_campaign').removeAttr('disabled');
@@ -697,6 +732,8 @@ function wc_sendsms_ajax_send() {
         $options = get_option('wc_sendsms_plugin_options');
         $username = '';
         $password = '';
+        $short = filter_var($_POST['short'], FILTER_VALIDATE_BOOLEAN);
+        $gdpr = filter_var($_POST['gdpr'], FILTER_VALIDATE_BOOLEAN);
         if (!empty($options) && is_array($options) && isset($options['username'])) {
             $username = $options['username'];
         } else {
@@ -717,7 +754,7 @@ function wc_sendsms_ajax_send() {
         foreach ($_POST['phones'] as $phone) {
             $phone = wc_sendsms_validate_phone($phone);
             if (!empty($phone)) {
-                wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'campaign');
+                wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'campaign', $short, $gdpr);
             }
         }
         echo __('Mesajele au fost trimise', 'wc_sendsms');
@@ -757,7 +794,7 @@ function wc_sendsms_settings_display_username()
 {
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['username'])) {
-        $username = $options['username'];
+        $username = esc_html($options['username']);
     } else {
         $username = '';
     }
@@ -768,8 +805,9 @@ function wc_sendsms_settings_display_username()
 function wc_sendsms_settings_display_password()
 {
     $options = get_option('wc_sendsms_plugin_options');
+
     if (!empty($options) && is_array($options) && isset($options['password'])) {
-        $password = $options['password'];
+        $password = esc_html($options['password']);
     } else {
         $password = '';
     }
@@ -781,7 +819,7 @@ function wc_sendsms_settings_display_from()
 {
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['from'])) {
-        $from = $options['from'];
+        $from = esc_html($options['from']);
     } else {
         $from = '';
     }
@@ -813,6 +851,30 @@ function wc_sendsms_settings_display_send_to_owner()
     <input id="wc_sendsms_settings_send_to_owner" name="wc_sendsms_plugin_options[send_to_owner]" type="checkbox" value="1" '.(!empty($send_to_owner)?'checked="checked"':'').' />';
 }
 
+function wc_sendsms_settings_display_send_to_owner_short()
+{
+    $options = get_option('wc_sendsms_plugin_options');
+    if (!empty($options) && is_array($options) && isset($options['send_to_owner_short'])) {
+        $send_to_owner_short = $options['send_to_owner_short'];
+    } else {
+        $send_to_owner_short = '';
+    }
+    echo '<label>
+    <input id="wc_sendsms_settings_send_to_owner_short" name="wc_sendsms_plugin_options[send_to_owner_short]" type="checkbox" value="1" '.(!empty($send_to_owner_short)?'checked="checked"':'').' />' . __('Va rugam sa folositi doar linkuri care incep cu https:// sau http://' ,'wc_sendsms') . '</label>';
+}
+
+function wc_sendsms_settings_display_send_to_owner_gdpr()
+{
+    $options = get_option('wc_sendsms_plugin_options');
+    if (!empty($options) && is_array($options) && isset($options['send_to_owner_gdpr'])) {
+        $send_to_owner_gdpr = $options['send_to_owner_gdpr'];
+    } else {
+        $send_to_owner_gdpr = '';
+    }
+    echo '<label>
+    <input id="wc_sendsms_settings_send_to_owner_gdpr" name="wc_sendsms_plugin_options[send_to_owner_gdpr]" type="checkbox" value="1" '.(!empty($send_to_owner_gdpr)?'checked="checked"':'').' />' . __('Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.' , 'wc_sendsms') . '</label>';
+}
+
 function wc_sendsms_settings_display_simulation_number()
 {
     $options = get_option('wc_sendsms_plugin_options');
@@ -829,7 +891,7 @@ function wc_sendsms_settings_display_send_to_owner_number()
 {
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['send_to_owner_number'])) {
-        $number = $options['send_to_owner_number'];
+        $number = esc_html($options['send_to_owner_number']);
     } else {
         $number = '';
     }
@@ -854,7 +916,7 @@ function wc_sendsms_settings_display_send_to_owner_content()
     echo '<p>' . __('Variabile disponibile:', 'wc_sendsms') . ' {billing_first_name}, {billing_last_name}, {shipping_first_name}, {shipping_last_name}, {order_number}, {order_date}, {order_total}</p><br />';
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['send_to_owner_content'])) {
-        $content = $options['send_to_owner_content'];
+        $content = esc_html($options['send_to_owner_content']);
     } else {
         $content = "";
     }
@@ -903,24 +965,46 @@ function wc_sendsms_settings_display_content()
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['content'])) {
         $content = $options['content'];
-        if(isset($options['enabled']))
-        {
+        if(isset($options['enabled'])) {
             $enabled = $options['enabled'];
-        }else
-        {
+        } else {
             $enabled = array();
+        }
+        if(isset($options['short'])) {
+            $short = $options['short'];
+        }else {
+            $short = array();
+        }
+        if(isset($options['gdpr'])) {
+            $gdpr = $options['gdpr'];
+        }else {
+            $gdpr = array();
         }
     } else {
         $content = array();
         $enabled = array();
+        $short = array();
+        $gdpr = array();
     }
+
     $statuses = wc_get_order_statuses();
     foreach ($statuses as $key => $value) {
+        $shortChecked = false;
+        $gdprChecked = false;
         $checked = false;
         if (isset($enabled[$key])) {
             $checked = true;
         }
-        echo '<p style="clear: both; padding-top: 10px;">Mesaj: '.$value.'</p><p><label><input type="checkbox" name="wc_sendsms_plugin_options[enabled]['.$key.']" value="1" '.($checked?'checked="checked"':'').' /> Activ</label></p>
+        if (isset($short[$key])) {
+            $shortChecked = true;
+        }
+        if (isset($gdpr[$key])) {
+            $gdprChecked = true;
+        }
+        
+        echo '  <p style="clear: both; padding-top: 10px;">Mesaj: '.$value.'</p><p><label><input type="checkbox" name="wc_sendsms_plugin_options[enabled]['.$key.']" value="1" '.($checked?'checked="checked"':'').' /> Activ</label></p>
+                <label style="width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[short]['.$key.']" value="1" '.($shortChecked?'checked="checked"':'').' />' . __('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms') . '</label>
+                <label style="display:block; width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[gdpr]['.$key.']" value="1" '.($gdprChecked?'checked="checked"':'').' />' . __('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms') . '</label>
         <div style="width: 100%; clear: both;">
             <div style="width: 45%; float: left">
                 <textarea id="wc_sendsms_settings_content_'.$key.'" name="wc_sendsms_plugin_options[content]['.$key.']" style="width: 400px; height: 100px;" maxlength="160" class="wc_sendsms_content">'.(isset($content[$key])?$content[$key]:'').'</textarea>
@@ -976,9 +1060,13 @@ function wc_sendsms_order_status_changed($order_id, $checkout = null)
     if (!empty($options) && is_array($options) && isset($options['content'])) {
         $content = $options['content'];
         $enabled = $options['enabled'];
+        $short = $options['short'];
+        $gdpr = $options['gdpr'];
     } else {
         $content = array();
         $enabled = array();
+        $short = array();
+        $gdpr = array();
     }
 
     wc_sendsms_get_account_info($username, $password, $from, $options);
@@ -1000,7 +1088,7 @@ function wc_sendsms_order_status_changed($order_id, $checkout = null)
 
             if (!empty($phone)) {
                 # send sms
-                wc_sendsms_send($username, $password, $phone, $message, $from);
+                wc_sendsms_send($username, $password, $phone, $message, $from, 'order', isset($short['wc-'.$status]) ? true : false, isset($gdpr['wc-'.$status]) ? true : false);
             }
         }
     }
@@ -1021,12 +1109,13 @@ function wc_sendsms_new_order($order_id) {
         if (!empty($username) && !empty($password)) {
             $phone = wc_sendsms_validate_phone($options['send_to_owner_number']);
             $message = $options['send_to_owner_content'];
-
+            $short = $options['send_to_owner_short'] == 1 ? true : false;
+            $gdpr = $options['send_to_owner_gdpr'] == 1 ? true : false;
             wc_sendsms_replace_characters($message, $order, $order_id);
 
             if (!empty($phone)) {
                 # send sms
-                wc_sendsms_send($username, $password, $phone, $message, $from);
+                wc_sendsms_send($username, $password, $phone, $message, $from, 'new order', $short, $gdpr);
             }
         }
     }   
@@ -1052,6 +1141,10 @@ function wc_sendsms_order_details_sms_box($post)
     <input type="hidden" name="wc_sendsms_order_id" id="wc_sendsms_order_id" value="<?=$post->ID?>" />
     <p><?=__('Telefon:', 'wc_sendsms')?></p>
     <p><input type="text" name="wc_sendsms_phone" id="wc_sendsms_phone" style="width: 100%" /></p>
+    <p><?=__('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></p>
+    <p><input type="checkbox" name="wc_sendsms_short" id="wc_sendsms_short"/></p>
+    <p><?=__('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms')?></p>
+    <p><input type="checkbox" name="wc_sendsms_gdpr" id="wc_sendsms_gdpr"/></p>
     <p><?=__('Mesaj:', 'wc_sendsms')?></p>
     <div>
         <textarea name="wc_sendsms_content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 100%; height: 100px;" maxlength="160"></textarea>
@@ -1082,7 +1175,9 @@ function wc_sendsms_javascript_send_single() { ?>
                     'action': 'wc_sendsms_single',
                     'phone': jQuery('#wc_sendsms_phone').val(),
                     'content': jQuery('#wc_sendsms_content').val(),
-                    'order': jQuery('#wc_sendsms_order_id').val()
+                    'order': jQuery('#wc_sendsms_order_id').val(),
+                    'short': jQuery('#wc_sendsms_short').is(":checked"),
+                    'gdpr': jQuery('#wc_sendsms_gdpr').is(":checked")
                 };
 
                 jQuery.post(ajaxurl, data, function(response) {
@@ -1090,6 +1185,8 @@ function wc_sendsms_javascript_send_single() { ?>
                     jQuery('#wc_sendsms_send_single').removeAttr('disabled');
                     jQuery('#wc_sendsms_phone').val('');
                     jQuery('#wc_sendsms_content').val('');
+                    jQuery('#wc_sendsms_short').prop('checked', false);
+                    jQuery('#wc_sendsms_gdpr').prop('checked', false);
                     alert(response);
                 });
             });
@@ -1103,6 +1200,8 @@ function wc_sendsms_ajax_send_single() {
         $options = get_option('wc_sendsms_plugin_options');
         $username = '';
         $password = '';
+        $short = filter_var($_POST['short'], FILTER_VALIDATE_BOOLEAN);
+        $gdpr = filter_var($_POST['gdpr'], FILTER_VALIDATE_BOOLEAN);
         if (!empty($options) && is_array($options) && isset($options['username'])) {
             $username = $options['username'];
         } else {
@@ -1122,7 +1221,7 @@ function wc_sendsms_ajax_send_single() {
         }
         $phone = wc_sendsms_validate_phone($_POST['phone']);
         if (!empty($phone)) {
-            wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'single order');
+            wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'single order', $short, $gdpr);
             global $woocommerce;
             $order = new WC_Order(wc_sendsms_sanitize_float($_POST['order']));
             $order->add_order_note(__('Mesaj SMS trimis către '.$phone.': ' . sanitize_textarea_field($_POST['content']),'wc_sendsms'));
@@ -1135,14 +1234,18 @@ function wc_sendsms_ajax_send_single() {
 }
 add_action('wp_ajax_wc_sendsms_single', 'wc_sendsms_ajax_send_single');
 
-function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 'order')
-{
+function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 'order', $short = false, $gdpr = false)
+{   
     global $wpdb;
 
     $args['headers'] = [
         'url' => get_site_url()
     ];
-    $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=message_send_gdpr&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=true', $args)), true);
+
+    //uncomment to send a message
+    //$results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=message_send'. ($gdpr ? "_gdpr" : "" ) .'&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=' . ($short ? 'true' : 'false'), $args)), true);
+
+    wc_sendsms_console_log('https://api.sendsms.ro/json?action=message_send'. ($gdpr ? "_gdpr" : "" ) .'&username='.urlencode($username).'&password='.urlencode($password).'&from='.urlencode($from).'&to='.urlencode($phone).'&text='.urlencode($message).'&short=' . ($short ? 'true' : 'false'), true);
 
     # history
     $table_name = $wpdb->prefix . 'wcsendsms_history';
@@ -1234,13 +1337,13 @@ function wc_sendsms_console_log($output, $woocommerce = false, $with_script_tags
         if ($with_script_tags) {
             $js_code = '<script>' . $js_code . '</script>';
         }
+        echo $js_code;
     }else
     {
         $log = new WC_Logger();
         $log_entry = print_r( $output, true );
         $log->log( 'sendsms', $log_entry );
     }
-    echo $js_code;
 }
 
 function wc_sendsms_get_account_info(&$username, &$password, &$from, $options)
