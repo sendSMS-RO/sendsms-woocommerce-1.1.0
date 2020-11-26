@@ -3,7 +3,7 @@
 Plugin Name: SendSMS
 Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
 Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
-Version: 1.2.4
+Version: 1.2.5
 Author: sendSMS
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ Text Domain: wc_sendsms
 $pluginDir = plugin_dir_path(__FILE__);
 $pluginDirUrl = plugin_dir_url(__FILE__);
 global $wc_sendsms_db_version;
-$wc_sendsms_db_version = '1.2.4';
+$wc_sendsms_db_version = '1.2.5';
 
 if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
     return;
@@ -244,28 +244,28 @@ function wc_sendsms_admin_init()
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner',
-        __('Trimitere SMS la fiecare comanda noua', 'wc_sendsms'),
+        __('Trimitere SMS la fiecare comandă nouă', 'wc_sendsms'),
         'wc_sendsms_settings_display_send_to_owner',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_short',
-        __('Micsorare url?', 'wc_sendsms'),
+        __('Micșorare url?', 'wc_sendsms'),
         'wc_sendsms_settings_display_send_to_owner_short',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_gdpr',
-        __('Adaugare link de dezabonare?', 'wc_sendsms'),
+        __('Adăugare link de dezabonare?', 'wc_sendsms'),
         'wc_sendsms_settings_display_send_to_owner_gdpr',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_number',
-        __('Numarul de telefon unde vor fi trimise mesajele', 'wc_sendsms'),
+        __('Numărul de telefon unde vor fi trimise mesajele', 'wc_sendsms'),
         'wc_sendsms_settings_display_send_to_owner_number',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
@@ -441,11 +441,11 @@ function wc_sendsms_test()
                     <td><input type="text" name="wc_sendsms_phone" style="width: 400px;" /></td>
                 </tr>
                 <tr>
-                    <th scope="row"><?=__('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></th>
+                    <th scope="row"><?=__('Micșorare url? (Vă rugăm sa folosiți doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></th>
                     <td><input type="checkbox" name="wc_sendsms_url"/></td>
                 </tr>
                 <tr>
-                    <th scope="row"><?=__('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms')?></th>
+                    <th scope="row"><?=__('Adăugare link de dezabonare? (Trebuie sa specificați mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuită automat cu linkul unic de confirmare. Dacă nu este specificată cheia {gdpr}, linkul de confirmare va fi plasat la sfârșitul mesajului.)', 'wc_sendsms')?></th>
                     <td><input type="checkbox" name="wc_sendsms_gdpr"/></td>
                 </tr>
                 <tr>
@@ -691,12 +691,12 @@ function wc_sendsms_campaign()
         <div style="display: inline-block; width: 66%; ">
             <label>
             <input type="checkbox" id="wc_sendsms_short" class="wc_sendsms_short" name="wc_sendsms_short"/>
-            <?=__('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></label>
+            <?=__('Micșorare url? (Vă rugăm să folosiți doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></label>
         </div>
         <div style="display: inline-block; width: 66%; ">
             <label>
             <input type="checkbox" id="wc_sendsms_gdpr" class="wc_sendsms_gdpr" name="wc_sendsms_gdpr"/>
-            <?=__('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms')?></label>
+            <?=__('Adăugare link de dezabonare? (Trebuie sa specificați mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuită automat cu linkul unic de confirmare. Daca nu este specificată cheia {gdpr}, linkul de confirmare va fi plasat la sfârsitul mesajului.)', 'wc_sendsms')?></label>
         </div>
         <div style="width: 100%; clear: both; padding-top: 20px;">
             <div style="width: 73%; float: left">
@@ -722,7 +722,7 @@ function wc_sendsms_campaign()
         </div>
         <p style="clear: both;">
             <button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign"><?=__('Trimite mesajul', 'wc_sendsms')?></button>
-            <button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign_estimate_price"><?=__('Estimeaza pretul', 'wc_sendsms')?></button>
+            <button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign_estimate_price"><?=__('Estimează prețul', 'wc_sendsms')?></button>
         </p>
     </div>
     <script type="text/javascript">
@@ -877,15 +877,19 @@ function wc_sendsms_ajax_estimate_price() {
         }
         $price = 0;
 
-        echo $messages_to_send . " - ";
-
         foreach ($_POST['phones'] as $phone) {
             $phone = wc_sendsms_validate_phone($phone);
             if (!empty($phone)) {
                 $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=route_check_price' .'&username=' . urlencode($username) . '&password=' . urlencode($password) . '&to=' . urlencode($phone))));
+                if ($results->details->status === 64) {
+                    $multiplier = $results->details->cost;
+                } else {
+                    $multiplier = 0;
+                }
+                $price += $messages_to_send * $multiplier;
             }
         }
-        echo __('Pretul estimativ este de ', 'wc_sendsms') . $price;
+        echo __('Prețul estimativ este de ', 'wc_sendsms') . $price . __(' euro.');
     } else {
         echo __('Trebuie să completați mesajul și să alegeți cel puțin un număr de telefon', 'wc_sendsms');
     }
@@ -989,7 +993,7 @@ function wc_sendsms_settings_display_send_to_owner_short()
         $send_to_owner_short = '';
     }
     echo '<label>
-    <input id="wc_sendsms_settings_send_to_owner_short" name="wc_sendsms_plugin_options[send_to_owner_short]" type="checkbox" value="1" '.(!empty($send_to_owner_short)?'checked="checked"':'').' />' . __('Va rugam sa folositi doar linkuri care incep cu https:// sau http://' ,'wc_sendsms') . '</label>';
+    <input id="wc_sendsms_settings_send_to_owner_short" name="wc_sendsms_plugin_options[send_to_owner_short]" type="checkbox" value="1" '.(!empty($send_to_owner_short)?'checked="checked"':'').' />' . __('Vă rugăm să folosiți doar linkuri care incep cu https:// sau http://' ,'wc_sendsms') . '</label>';
 }
 
 function wc_sendsms_settings_display_send_to_owner_gdpr()
@@ -1001,7 +1005,7 @@ function wc_sendsms_settings_display_send_to_owner_gdpr()
         $send_to_owner_gdpr = '';
     }
     echo '<label>
-    <input id="wc_sendsms_settings_send_to_owner_gdpr" name="wc_sendsms_plugin_options[send_to_owner_gdpr]" type="checkbox" value="1" '.(!empty($send_to_owner_gdpr)?'checked="checked"':'').' />' . __('Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.' , 'wc_sendsms') . '</label>';
+    <input id="wc_sendsms_settings_send_to_owner_gdpr" name="wc_sendsms_plugin_options[send_to_owner_gdpr]" type="checkbox" value="1" '.(!empty($send_to_owner_gdpr)?'checked="checked"':'').' />' . __('Trebuie sa specificați mesajul cheie {gdpr}. Cheia {gdpr} va fi înlocuită automat cu linkul unic de confirmare. Daca nu este specificată cheia {gdpr}, linkul de confirmare va fi plasat la sfârșitul mesajului.' , 'wc_sendsms') . '</label>';
 }
 
 function wc_sendsms_settings_display_simulation_number()
@@ -1118,8 +1122,8 @@ function wc_sendsms_settings_display_content()
         }
         
         echo '  <p style="clear: both; padding-top: 10px;">Mesaj: '.$value.'</p><p><label><input type="checkbox" name="wc_sendsms_plugin_options[enabled]['.$key.']" value="1" '.($checked?'checked="checked"':'').' /> Activ</label></p>
-                <label style="width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[short]['.$key.']" value="1" '.($shortChecked?'checked="checked"':'').' />' . __('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms') . '</label>
-                <label style="display:block; width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[gdpr]['.$key.']" value="1" '.($gdprChecked?'checked="checked"':'').' />' . __('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms') . '</label>
+                <label style="width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[short]['.$key.']" value="1" '.($shortChecked?'checked="checked"':'').' />' . __('Micșorare url? (Vă rugăm să folosiți doar linkuri care incep cu https:// sau http://)', 'wc_sendsms') . '</label>
+                <label style="display:block; width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[gdpr]['.$key.']" value="1" '.($gdprChecked?'checked="checked"':'').' />' . __('Adăugare link de dezabonare? (Trebuie sa specificați mesajul cheie {gdpr}. Cheia {gdpr} va fi înlocuită automat cu linkul unic de confirmare. Dacă nu este specificată cheia {gdpr}, linkul de confirmare va fi plasat la sfarșitul mesajului.)', 'wc_sendsms') . '</label>
         <div style="width: 100%; clear: both;">
             <div style="width: 45%; float: left">
                 <textarea id="wc_sendsms_settings_content_'.$key.'" name="wc_sendsms_plugin_options[content]['.$key.']" style="width: 400px; height: 100px;" class="wc_sendsms_content">'.(isset($content[$key])?$content[$key]:'').'</textarea>
@@ -1279,9 +1283,9 @@ function wc_sendsms_order_details_sms_box($post)
     <input type="hidden" name="wc_sendsms_order_id" id="wc_sendsms_order_id" value="<?=$post->ID?>" />
     <p><?=__('Telefon:', 'wc_sendsms')?></p>
     <p><input type="text" name="wc_sendsms_phone" id="wc_sendsms_phone" style="width: 100%" /></p>
-    <p><?=__('Micsorare url? (Va rugam sa folositi doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></p>
+    <p><?=__('Micșorare url? (Vă rugăm să folosiți doar linkuri care incep cu https:// sau http://)', 'wc_sendsms')?></p>
     <p><input type="checkbox" name="wc_sendsms_short" id="wc_sendsms_short"/></p>
-    <p><?=__('Adaugare link de dezabonare? (Trebuie sa specificati mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificata cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms')?></p>
+    <p><?=__('Adăugare link de dezabonare? (Trebuie sa specificați mesajul cheie {gdpr}. Cheia {gdpr} va fi inlocuita automat cu linkul unic de confirmare. Daca nu este specificată cheia {gdpr}, linkul de confirmare va fi plasat la sfarsitul mesajului.)', 'wc_sendsms')?></p>
     <p><input type="checkbox" name="wc_sendsms_gdpr" id="wc_sendsms_gdpr"/></p>
     <p><?=__('Mesaj:', 'wc_sendsms')?></p>
     <div>

@@ -3,7 +3,7 @@ Contributors: neamtua, catalinsendsms
 Tags: sms,woocommerce, sendsms
 Requires at least: 4.4
 Tested up to: 5.5.3
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,11 @@ This module requires you to have WooCommerce installed.
 6. Send SMS within an order
 
 == Changelog ==
+= 1.2.5 =
+Added option to send a non gdpr / short url message
+Added price estimation
+Added credit balance on configuration page
+Bug fixes
 = 1.2.2 = 
 Possibility to receive message with each new order
 Bug fixes
