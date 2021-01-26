@@ -2,7 +2,7 @@
 /*
 Plugin Name: SendSMS
 Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
-Description: Folositi solutia noastra de expedieri SMS pentru a livra informatia corecta la momentul potrivit. Oferiti clientilor dvs. o experienta superioara!
+Description: Use our SMS shipping solution to deliver the right information at the right time. Give your customers a superior experience!
 Version: 1.2.5
 Author: sendSMS
 License: GPLv2
@@ -125,7 +125,7 @@ function wc_sendsms_optout($checkout)
         woocommerce_form_field('wc_sendsms_optout', array(
             'type' => 'checkbox',
             'class' => array('input-checkbox', 'form-row-wide'),
-            'label' => __('&nbsp;Nu doresc sa primesc SMS cu starea comenzii', 'wc_sendsms'),
+            'label' => __('&nbsp;I do not want to receive SMS with the status of the order', 'wc_sendsms'),
         ), $checkout->get_value('wc_sendsms_optout'));
         echo '</div><div style="clear: both">&nbsp;</div>';
     }
