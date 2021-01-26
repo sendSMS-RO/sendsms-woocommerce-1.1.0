@@ -15,8 +15,28 @@ $pluginDirUrl = plugin_dir_url(__FILE__);
 global $wc_sendsms_db_version;
 $wc_sendsms_db_version = '1.2.5';
 
-if (!in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-    return;
+$need = false;
+         
+if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+  require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+}
+     
+// multisite 
+if ( is_multisite() ) {
+  // this plugin is network activated - Woo must be network activated 
+  if ( is_plugin_active_for_network( plugin_basename(__FILE__) ) ) {
+    $need = is_plugin_active_for_network('woocommerce/woocommerce.php') ? false : true; 
+  // this plugin is locally activated - Woo can be network or locally activated 
+  } else {
+    $need = is_plugin_active( 'woocommerce/woocommerce.php')  ? false : true;   
+  }
+// this plugin runs on a single site    
+} else {
+  $need =  is_plugin_active( 'woocommerce/woocommerce.php') ? false : true;     
+}
+     
+if ($need === true) {
+  return; 
 }
 
 # history table
