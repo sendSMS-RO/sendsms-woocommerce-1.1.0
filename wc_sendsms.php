@@ -358,12 +358,12 @@ function wc_sendsms_get_woocommerce_product_list()
                     $false_post['ID'] = $theid;
                     $false_post['post_status'] = 'auto-draft';
                     wp_update_post( $false_post );
-                    if (function_exists(add_to_debug)) add_to_debug('false post_type set to auto-draft. id='.$theid);
+                    //if (function_exists(add_to_debug)) add_to_debug('false post_type set to auto-draft. id='.$theid);
                 } else {
                     // there's no sku for this variation > copy parent sku to variation sku
                     // & remove the parent sku so the parent check below triggers
                     $sku = get_post_meta($parent_id, '_sku', true );
-                    if (function_exists(add_to_debug)) add_to_debug('empty sku id='.$theid.'parent='.$parent_id.'setting sku to '.$sku);
+                    //if (function_exists(add_to_debug)) add_to_debug('empty sku id='.$theid.'parent='.$parent_id.'setting sku to '.$sku);
                     update_post_meta($theid, '_sku', $sku );
                     update_post_meta($parent_id, '_sku', '' );
                 }
@@ -498,7 +498,8 @@ function wc_sendsms_campaign()
     global $wpdb;
 
     # get all products
-    $products = wc_sendsms_get_woocommerce_product_list();  
+    $products = wc_sendsms_get_woocommerce_product_list();
+
 
     $billing_states = $wpdb->get_results('SELECT DISTINCT meta_value FROM '.$wpdb->prefix.'postmeta WHERE meta_key = \'_billing_state\' ORDER BY meta_value ASC');
 
@@ -880,9 +881,9 @@ function wc_sendsms_ajax_estimate_price() {
         foreach ($_POST['phones'] as $phone) {
             $phone = wc_sendsms_validate_phone($phone);
             if (!empty($phone)) {
-                $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=route_check_price' .'&username=' . urlencode($username) . '&password=' . urlencode($password) . '&to=' . urlencode($phone))));
-                if ($results->details->status === 64) {
-                    $multiplier = $results->details->cost;
+                $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=route_check_price' .'&username=' . urlencode($username) . '&password=' . urlencode($password) . '&to=' . urlencode($phone))), true);
+                if ($results['details']['status'] === 64) {
+                    $multiplier = $results['details']['cost'];
                 } else {
                     $multiplier = 0;
                 }
@@ -1498,9 +1499,8 @@ function wc_sendsms_console_log($output, $woocommerce = false, $with_script_tags
         echo $js_code;
     }else
     {
-        $log = new WC_Logger();
-        $log_entry = print_r( $output, true );
-        $log->log( 'sendsms', $log_entry );
+        $logger = wc_get_logger();
+        $logger->debug($output);
     }
 }
 
