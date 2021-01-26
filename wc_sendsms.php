@@ -1526,12 +1526,12 @@ function wc_sendsms_get_account_info(&$username, &$password, &$from, $options)
 function wc_sendsms_replace_characters(&$message, $order, $order_id)
 {
     $replace = array(
-        '{billing_first_name}' => wc_sendsms_clean_diacritice($order->billing_first_name),
-        '{billing_last_name}' => wc_sendsms_clean_diacritice($order->billing_last_name),
-        '{shipping_first_name}' => wc_sendsms_clean_diacritice($order->shipping_first_name),
-        '{shipping_last_name}' => wc_sendsms_clean_diacritice($order->shipping_last_name),
+        '{billing_first_name}' => wc_sendsms_clean_diacritice($order->get_billing_first_name()),
+        '{billing_last_name}' => wc_sendsms_clean_diacritice($order->get_billing_last_name()),
+        '{shipping_first_name}' => wc_sendsms_clean_diacritice($order->get_shipping_first_name()),
+        '{shipping_last_name}' => wc_sendsms_clean_diacritice($order->get_shipping_last_name()),
         '{order_number}' => $order_id,
-        '{order_date}' => date('d-m-Y', strtotime($order->order_date)),
+        '{order_date}' => date('d-m-Y', strtotime($order->get_date_created())),
         '{order_total}' => number_format($order->get_total(), wc_get_price_decimals(), ',', '')
     );
     foreach ($replace as $key => $value) {
