@@ -1471,7 +1471,7 @@ function wc_sendsms_send($username, $password, $phone, $message, $from, $type = 
     );
     if (!get_option('wc-sendsms-default-price-time', false) || get_option('wc-sendsms-default-price-time') < date('Y-m-d H:i:s')) {
         $results = json_decode(wp_remote_retrieve_body(wp_remote_get('https://api.sendsms.ro/json?action=route_check_price&username=' . urlencode($username) . '&password=' . urlencode($password) . '&to=' . urlencode($phone), $args)), true);
-        if (!is_null($results) || !is_null($results['details']) || !is_null($results['details']['status']) || $results['details']['status'] === 64) {
+        if ($results['details']['status'] === 64) {
             update_option('wc-sendsms-default-price', $results['details']['cost']);
             update_option('wc-sendsms-default-price-time', date('Y-m-d H:i:s', strtotime('+1 day')));
         }
