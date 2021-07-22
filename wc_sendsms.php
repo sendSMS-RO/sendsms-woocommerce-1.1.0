@@ -846,7 +846,7 @@ function wc_sendsms_ajax_send()
                 $_POST['content'],
                 $phone,
                 $from
-            ), ',', '"', '');
+            ));
         }
         // $start_time = "2970-01-01 02:00:00";
         $start_time = "";
