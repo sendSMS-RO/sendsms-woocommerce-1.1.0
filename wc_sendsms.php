@@ -3,7 +3,7 @@
 Plugin Name: SendSMS
 Plugin URI: https://www.sendsms.ro/ro/ecommerce/plugin-woocommerce/
 Description: Use our SMS shipping solution to deliver the right information at the right time. Give your customers a superior experience!
-Version: 1.2.8
+Version: 1.2.9
 Author: sendSMS
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -183,8 +183,8 @@ function wc_sendsms_add_menu()
 
     add_submenu_page(
         'wc_sendsms_main',
-        __('Historic', 'wc_sendsms'),
-        __('Historic', 'wc_sendsms'),
+        __('History', 'wc_sendsms'),
+        __('History', 'wc_sendsms'),
         'manage_options',
         'wc_sendsms_history',
         'wc_sendsms_history'
@@ -846,7 +846,7 @@ function wc_sendsms_ajax_send()
                 $_POST['content'],
                 $phone,
                 $from
-            ));
+            ), ',', '"', '');
         }
         // $start_time = "2970-01-01 02:00:00";
         $start_time = "";

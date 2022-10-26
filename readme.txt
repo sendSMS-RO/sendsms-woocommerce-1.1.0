@@ -2,8 +2,8 @@
 Contributors: neamtua, catalinsendsms
 Tags: sms,woocommerce, sendsms
 Requires at least: 4.0
-Tested up to: 5.7.2
-Stable tag: 1.2.8
+Tested up to: 6.1
+Stable tag: 1.2.9
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
