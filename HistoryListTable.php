@@ -7,14 +7,14 @@ class WC_SendSMS_History_List_Table extends WP_List_Table {
      */
     public function get_columns() {
         return array(
-            'id'            => __('ID', 'wc_sendsms'),
-            'phone'         => __('Phone', 'wc_sendsms'),
-            'status'         => __('Status', 'wc_sendsms'),
-            'message'         => __('Answer', 'wc_sendsms'),
-            'details'         => __('Details', 'wc_sendsms'),
-            'content'         => __('Content', 'wc_sendsms'),
-            'type'         => __('Type', 'wc_sendsms'),
-            'sent_on'         => __('Date', 'wc_sendsms'),
+            'id'            => __('ID', 'sendsms'),
+            'phone'         => __('Phone', 'sendsms'),
+            'status'         => __('Status', 'sendsms'),
+            'message'         => __('Answer', 'sendsms'),
+            'details'         => __('Details', 'sendsms'),
+            'content'         => __('Content', 'sendsms'),
+            'type'         => __('Type', 'sendsms'),
+            'sent_on'         => __('Date', 'sendsms'),
         );
     }
 

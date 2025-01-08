@@ -1,9 +1,9 @@
 === SendSMS ===
 Contributors: neamtua, catalinsendsms
-Tags: sms,woocommerce, sendsms
+Tags: sms, woocommerce, sendsms
 Requires at least: 4.0
-Tested up to: 6.1
-Stable tag: 1.2.9
+Tested up to: 6.7.1
+Stable tag: 1.3.0
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,8 @@ This module requires you to have WooCommerce installed.
 6. Send SMS within an order
 
 == Changelog ==
+= 1.3.0 =
+Fixed several XSS vulnerabilities
 = 1.2.8 = 
 The plugin is now using batch create and csv files to send campaign messages.
 Under campaign, the possibility to send a message with short and unsubscribe link are removed for now.

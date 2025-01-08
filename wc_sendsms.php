@@ -7,7 +7,6 @@ Version: 1.2.9
 Author: sendSMS
 License: GPLv2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: wc_sendsms
 Domain Path: /languages/
 */
 
@@ -92,7 +91,7 @@ add_action('init', 'wc_sendsms_load_textdomain');
  */
 function wc_sendsms_load_textdomain()
 {
-    load_plugin_textdomain('wc_sendsms', false, dirname(plugin_basename(__FILE__)) . '/languages');
+    load_plugin_textdomain('sendsms', false, dirname(plugin_basename(__FILE__)) . '/languages');
 }
 
 # update db structure
@@ -143,7 +142,7 @@ function wc_sendsms_optout($checkout)
         woocommerce_form_field('wc_sendsms_optout', array(
             'type' => 'checkbox',
             'class' => array('input-checkbox', 'form-row-wide'),
-            'label' => __('&nbsp;I do not want to receive an SMS with the status of the order', 'wc_sendsms'),
+            'label' => __('&nbsp;I do not want to receive an SMS with the status of the order', 'sendsms'),
         ), $checkout->get_value('wc_sendsms_optout'));
         echo '</div><div style="clear: both">&nbsp;</div>';
     }
@@ -164,8 +163,8 @@ add_action('admin_menu', 'wc_sendsms_add_menu');
 function wc_sendsms_add_menu()
 {
     add_menu_page(
-        __('SendSMS', 'wc_sendsms'),
-        __('SendSMS', 'wc_sendsms'),
+        __('SendSMS', 'sendsms'),
+        __('SendSMS', 'sendsms'),
         'manage_options',
         'wc_sendsms_main',
         'wc_sendsms_main',
@@ -174,8 +173,8 @@ function wc_sendsms_add_menu()
 
     add_submenu_page(
         'wc_sendsms_main',
-        __('Configuration', 'wc_sendsms'),
-        __('Configuration', 'wc_sendsms'),
+        __('Configuration', 'sendsms'),
+        __('Configuration', 'sendsms'),
         'manage_options',
         'wc_sendsms_login',
         'wc_sendsms_login'
@@ -183,8 +182,8 @@ function wc_sendsms_add_menu()
 
     add_submenu_page(
         'wc_sendsms_main',
-        __('History', 'wc_sendsms'),
-        __('History', 'wc_sendsms'),
+        __('History', 'sendsms'),
+        __('History', 'sendsms'),
         'manage_options',
         'wc_sendsms_history',
         'wc_sendsms_history'
@@ -192,8 +191,8 @@ function wc_sendsms_add_menu()
 
     add_submenu_page(
         'wc_sendsms_main',
-        __('Campaign', 'wc_sendsms'),
-        __('Campaign', 'wc_sendsms'),
+        __('Campaign', 'sendsms'),
+        __('Campaign', 'sendsms'),
         'manage_options',
         'wc_sendsms_campaign',
         'wc_sendsms_campaign'
@@ -201,8 +200,8 @@ function wc_sendsms_add_menu()
 
     add_submenu_page(
         'wc_sendsms_main',
-        __('Send a test', 'wc_sendsms'),
-        __('Send a test', 'wc_sendsms'),
+        __('Send a test', 'sendsms'),
+        __('Send a test', 'sendsms'),
         'manage_options',
         'wc_sendsms_test',
         'wc_sendsms_test'
@@ -213,19 +212,19 @@ function wc_sendsms_main()
 {
 ?>
     <div class="wrap">
-        <h2><?= __('SendSMS for WooCommerce', 'wc_sendsms') ?></h2>
+        <h2><?php echo esc_html('SendSMS for WooCommerce', 'sendsms') ?></h2>
         <br />
-        <p><?= __('To use the module, please enter your credentials on the configuration page.', 'wc_sendsms') ?></p><br />
-        <p><?= __('You don\'t have a sendSMS account?', 'wc_sendsms') ?><br />
-            <?= __('Sign up for FREE', 'wc_sendsms') ?> <a href="http://www.sendsms.ro/ro" target="_blank"><?= __('here', 'wc_sendsms') ?></a>.<br />
-            <?= __('You can find out more about sendSMS', 'wc_sendsms') ?> <a href="http://www.sendsms.ro/ro"><?= __('here', 'wc_sendsms') ?></a>.</p>
-        <p><?= __('On the settings page, below the credentials, you\'ll find a text field for each status available in WooCommerce. You will need to enter a message for the fields to which you want to send the notification. If a field is empty, then the text message will not be sent.', 'wc_sendsms') ?></p>
-        <p><?= __('Example: If you want to send a message when the status of the order changes to Completed, then you will need to fill in a message in the text field.', 'wc_sendsms') ?> <strong><?= __('"Message: Completed"', 'wc_sendsms') ?></strong>.</p><br />
-        <p><?= __('You can enter variables that will be filled in according to the order data.', 'wc_sendsms') ?></p>
-        <p><?= __('Example message:', 'wc_sendsms') ?> <strong><?= __('Hi {billing_first_name}. Your order with order {order_number} has been completed.', 'wc_sendsms') ?></strong></p>
-        <p><?= __('The message entered must not contain diacritics. If they are entered the letters with diacritics will be replaced with their equivalent without diacritics.', 'wc_sendsms') ?></p>
+        <p><?php echo esc_html('To use the module, please enter your credentials on the configuration page.', 'sendsms') ?></p><br />
+        <p><?php echo esc_html('You don\'t have a sendSMS account?', 'sendsms') ?><br />
+            <?php echo esc_html('Sign up for FREE', 'sendsms') ?> <a href="http://www.sendsms.ro/ro" target="_blank"><?php echo esc_html('here', 'sendsms') ?></a>.<br />
+            <?php echo esc_html('You can find out more about sendSMS', 'sendsms') ?> <a href="http://www.sendsms.ro/ro"><?php echo esc_html('here', 'sendsms') ?></a>.</p>
+        <p><?php echo esc_html('On the settings page, below the credentials, you\'ll find a text field for each status available in WooCommerce. You will need to enter a message for the fields to which you want to send the notification. If a field is empty, then the text message will not be sent.', 'sendsms') ?></p>
+        <p><?php echo esc_html('Example: If you want to send a message when the status of the order changes to Completed, then you will need to fill in a message in the text field.', 'sendsms') ?> <strong><?php echo esc_html('"Message: Completed"', 'sendsms') ?></strong>.</p><br />
+        <p><?php echo esc_html('You can enter variables that will be filled in according to the order data.', 'sendsms') ?></p>
+        <p><?php echo esc_html('Example message:', 'sendsms') ?> <strong><?php echo esc_html('Hi {billing_first_name}. Your order with order {order_number} has been completed.', 'sendsms') ?></strong></p>
+        <p><?php echo esc_html('The message entered must not contain diacritics. If they are entered the letters with diacritics will be replaced with their equivalent without diacritics.', 'sendsms') ?></p>
         <br /><br />
-        <p style="text-align: center"><a href="http://sendsms.ro" target="_blank"><img src="<?= plugin_dir_url(__FILE__) . 'images/sendsms_logo.png' ?>" /></a></p>
+        <p style="text-align: center"><a href="http://sendsms.ro" target="_blank"><img src="<?php plugin_dir_url(__FILE__) . 'images/sendsms_logo.png' ?>" /></a></p>
     </div>
 <?php
 }
@@ -248,98 +247,98 @@ function wc_sendsms_admin_init()
     );
     add_settings_field(
         'wc_sendsms_plugin_options_username',
-        __('Username', 'wc_sendsms'),
+        __('Username', 'sendsms'),
         'wc_sendsms_settings_display_username',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_password',
-        __('Password / API Key', 'wc_sendsms'),
+        __('Password / API Key', 'sendsms'),
         'wc_sendsms_settings_display_password',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_from',
-        __('Shipper label', 'wc_sendsms'),
+        __('Shipper label', 'sendsms'),
         'wc_sendsms_settings_display_from',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_cc',
-        __('Country Code', 'wc_sendsms'),
+        __('Country Code', 'sendsms'),
         'wc_sendsms_settings_display_cc',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_simulation',
-        __('SMS sending simulation', 'wc_sendsms'),
+        __('SMS sending simulation', 'sendsms'),
         'wc_sendsms_settings_display_simulation',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_simulation_number',
-        __('Simulation phone number', 'wc_sendsms'),
+        __('Simulation phone number', 'sendsms'),
         'wc_sendsms_settings_display_simulation_number',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner',
-        __('Send an SMS to each new order', 'wc_sendsms'),
+        __('Send an SMS to each new order', 'sendsms'),
         'wc_sendsms_settings_display_send_to_owner',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_short',
-        __('Short URL?', 'wc_sendsms'),
+        __('Short URL?', 'sendsms'),
         'wc_sendsms_settings_display_send_to_owner_short',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_gdpr',
-        __('Add unsubscribe link?', 'wc_sendsms'),
+        __('Add unsubscribe link?', 'sendsms'),
         'wc_sendsms_settings_display_send_to_owner_gdpr',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_number',
-        __('The phone number where the messages will be sent', 'wc_sendsms'),
+        __('The phone number where the messages will be sent', 'sendsms'),
         'wc_sendsms_settings_display_send_to_owner_number',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_send_to_owner_content',
-        __('Message', 'wc_sendsms'),
+        __('Message', 'sendsms'),
         'wc_sendsms_settings_display_send_to_owner_content',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_optout',
-        __('Opt-out in cart', 'wc_sendsms'),
+        __('Opt-out in cart', 'sendsms'),
         'wc_sendsms_settings_display_optout',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_content',
-        __('Status Updates', 'wc_sendsms'),
+        __('Status Updates', 'sendsms'),
         'wc_sendsms_settings_display_content',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
     );
     add_settings_field(
         'wc_sendsms_plugin_options_enabled',
-        __('', 'wc_sendsms'),
+        '',
         'wc_sendsms_settings_display_enabled',
         'wc_sendsms_plugin',
         'wc_sendsms_plugin_login'
@@ -350,7 +349,7 @@ function wc_sendsms_login()
 {
 ?>
     <div class="wrap">
-        <h2><?= __('SendSMS - Login data', 'wc_sendsms') ?></h2>
+        <h2><?php __('SendSMS - Login data', 'sendsms') ?></h2>
         <h3><?php
             $options = get_option('wc_sendsms_plugin_options');
             $username = "";
@@ -361,9 +360,9 @@ function wc_sendsms_login()
             $results = json_decode(wp_remote_retrieve_body(wp_remote_get('http://api.sendsms.ro/json?action=user_get_balance&username=' . urlencode($username) . '&password=' . urlencode($password))), true);
 
             if ($results['status'] >= 0) {
-                echo __('You have ', 'wc_sendsms') . $results['details'] . __(' euro in your sendSMS account.', 'wc_sendsms');
+                echo esc_html('You have ', 'sendsms') . esc_html($results['details']) . esc_html(' euro in your sendSMS account.', 'sendsms');
             } else {
-                echo __('The plugin is not configured.', 'wc_sendsms');
+                echo esc_html('The plugin is not configured.', 'sendsms');
             }
             ?></h3>
         <?php settings_errors(); ?>
@@ -371,7 +370,7 @@ function wc_sendsms_login()
             <?php settings_fields('wc_sendsms_plugin_options'); ?>
             <?php do_settings_sections('wc_sendsms_plugin'); ?>
 
-            <input name="Submit" type="submit" class="button button-primary button-large" value="<?= __('Save', 'wc_sendsms') ?>" />
+            <input name="Submit" type="submit" class="button button-primary button-large" value="<?php echo esc_html('Save', 'sendsms') ?>" />
         </form>
     </div>
 <?php
@@ -435,12 +434,12 @@ function wc_sendsms_test()
     if (isset($_POST) && !empty($_POST)) {
         if (empty($_POST['wc_sendsms_phone'])) {
             echo '<div class="notice notice-error is-dismissible">
-                <p>' . __('You have not entered your phone number!', 'wc_sendsms') . '</p>
+                <p>' . esc_html('You have not entered your phone number!', 'sendsms') . '</p>
             </div>';
         }
         if (empty($_POST['wc_sendsms_message'])) {
             echo '<div class="notice notice-error is-dismissible">
-                <p>' . __('You have not entered a message!', 'wc_sendsms') . '</p>
+                <p>' . esc_html('You have not entered a message!', 'sendsms') . '</p>
             </div>';
         }
         if (!empty($_POST['wc_sendsms_message']) && !empty($_POST['wc_sendsms_phone'])) {
@@ -463,48 +462,48 @@ function wc_sendsms_test()
                 if (!empty($phone)) {
                     wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['wc_sendsms_message']), $from, 'test', $short, $gdpr);
                     echo '<div class="notice notice-success is-dismissible">
-                    <p>' . __('The message was sent.', 'wc_sendsms') . '</p>
+                    <p>' . esc_html('The message was sent.', 'sendsms') . '</p>
                 </div>';
                 } else {
                     echo '<div class="notice notice-error is-dismissible">
-                    <p>' . __('The validated phone number is empty!', 'wc_sendsms') . '</p>
+                    <p>' . esc_html('The validated phone number is empty!', 'sendsms') . '</p>
                 </div>';
                 }
             } else {
                 echo '<div class="notice notice-error is-dismissible">
-                    <p>' . __('You have not configured the module!', 'wc_sendsms') . '</p>
+                    <p>' . esc_html('You have not configured the module!', 'sendsms') . '</p>
                 </div>';
             }
         }
     }
 ?>
     <div class="wrap">
-        <h2><?= __('SendSMS - Send an SMS test', 'wc_sendsms') ?></h2>
-        <form method="post" action="<?= admin_url('admin.php?page=wc_sendsms_test') ?>">
+        <h2><?php __('SendSMS - Send an SMS test', 'sendsms') ?></h2>
+        <form method="post" action="<?php admin_url('admin.php?page=wc_sendsms_test') ?>">
             <table class="form-table">
                 <tbody>
                     <tr>
-                        <th scope="row"><?= __('Phone number', 'wc_sendsms') ?></th>
+                        <th scope="row"><?php echo esc_html('Phone number', 'sendsms') ?></th>
                         <td><input type="text" name="wc_sendsms_phone" style="width: 400px;" /></td>
                     </tr>
                     <tr>
-                        <th scope="row"><?= __('Short URL? (Please use only links starting with https:// or http://)', 'wc_sendsms') ?></th>
+                        <th scope="row"><?php echo esc_html('Short URL? (Please use only links starting with https:// or http://)', 'sendsms') ?></th>
                         <td><input type="checkbox" name="wc_sendsms_url" /></td>
                     </tr>
                     <tr>
-                        <th scope="row"><?= __('Add unsubscribe link? (You must specify the {gdpr} key message. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.)', 'wc_sendsms') ?></th>
+                        <th scope="row"><?php echo esc_html('Add unsubscribe link? (You must specify the {gdpr} key message. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.)', 'sendsms') ?></th>
                         <td><input type="checkbox" name="wc_sendsms_gdpr" /></td>
                     </tr>
                     <tr>
-                        <th scope="row"><?= __('Message', 'wc_sendsms') ?></th>
+                        <th scope="row"><?php echo esc_html('Message', 'sendsms') ?></th>
                         <td>
                             <textarea name="wc_sendsms_message" class="wc_sendsms_content" style="width: 400px; height: 100px;"></textarea>
-                            <p><?= __("The field is empty", 'wc_sendsms') ?></p>
+                            <p><?php echo esc_html("The field is empty", 'sendsms') ?></p>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <p style="clear: both;"><button type="submit" class="button button-primary button-large" id="wc_sendsms_send_test"><?= __('Send the message', 'wc_sendsms') ?></button></p>
+            <p style="clear: both;"><button type="submit" class="button button-primary button-large" id="wc_sendsms_send_test"><?php echo esc_html('Send the message', 'sendsms') ?></button></p>
         </form>
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", (event) => {
@@ -524,9 +523,9 @@ function wc_sendsms_test()
                         if (lenght % 160 === 0) {
                             messages--;
                         }
-                        counter.textContent = "<?= __('The approximate number of messages: ', 'wc_sendsms'); ?>" + Math.floor(messages) + " (" + lenght + ")";
+                        counter.textContent = "<?php echo esc_html('The approximate number of messages: ', 'sendsms'); ?>" + Math.floor(messages) + " (" + lenght + ")";
                     } else {
-                        counter.textContent = "<?= __('The field is empty', 'wc_sendsms'); ?>";
+                        counter.textContent = "<?php echo esc_html('The field is empty', 'sendsms'); ?>";
                     }
                 }
             });
@@ -580,7 +579,7 @@ function wc_sendsms_campaign()
 
 ?>
     <div class="wrap">
-        <h2><?= __('SendSMS - Campaign', 'wc_sendsms') ?></h2>
+        <h2><?php echo esc_html('SendSMS - Campaign', 'sendsms') ?></h2>
 
         <!-- This is the filtering form -->
         <form method="GET" action="">
@@ -591,14 +590,14 @@ function wc_sendsms_campaign()
             <input type="hidden" name="filtering" value="true" />
             <div style="width: 100%; clear: both;">
                 <div style="width: 48%; float: left;">
-                    <p><?= __('Period', 'wc_sendsms') ?> <input type="text" class="wcsendsmsdatepicker" name="perioada_start" value="<?= isset($_GET['perioada_start']) ? wc_sendsms_sanitize_event_time($_GET['perioada_start']) : '' ?>" /> - <input type="text" class="wcsendsmsdatepicker" name="perioada_final" value="<?= isset($_GET['perioada_final']) ? wc_sendsms_sanitize_event_time($_GET['perioada_final']) : '' ?>" /></p>
+                    <p><?php echo esc_html('Period', 'sendsms') ?> <input type="text" class="wcsendsmsdatepicker" name="perioada_start" value="<?php isset($_GET['perioada_start']) ? wc_sendsms_sanitize_event_time($_GET['perioada_start']) : '' ?>" /> - <input type="text" class="wcsendsmsdatepicker" name="perioada_final" value="<?php isset($_GET['perioada_final']) ? wc_sendsms_sanitize_event_time($_GET['perioada_final']) : '' ?>" /></p>
                 </div>
                 <div style="width: 48%; float: left">
-                    <p><?= __('Minimum amount per order:', 'wc_sendsms') ?> <input type="number" name="suma" value="<?= isset($_GET['suma']) ? wc_sendsms_sanitize_float($_GET['suma']) : '0' ?>" /></p>
+                    <p><?php echo esc_html('Minimum amount per order:', 'sendsms') ?> <input type="number" name="suma" value="<?php isset($_GET['suma']) ? wc_sendsms_sanitize_float($_GET['suma']) : '0' ?>" /></p>
                 </div>
                 <div style="width: 100%; clear: both;">
                     <div style="width: 48%; float: left;" class="mySelect">
-                        <p><?= __('The purchased product (leave blank to select all products):', 'wc_sendsms') ?>
+                        <p><?php echo esc_html('The purchased product (leave blank to select all products):', 'sendsms') ?>
                             <select id="produse_selectate" name="produse[]" multiple="multiple" style="width:80%;max-width:25em;">
                                 <?php
                                 for ($i = 0; $i < count($products); $i++) {
@@ -612,7 +611,7 @@ function wc_sendsms_campaign()
                                         }
                                     }
                                 ?>
-                                    <option value="<?= "id_" . esc_attr($products[$i][2]) ?>" <?= $selected ? 'selected="selected"' : '' ?>><?= esc_attr($products[$i][0]) . " - " . esc_attr($products[$i][1]) ?></option>
+                                    <option value="<?php "id_" . esc_attr($products[$i][2]) ?>" <?php $selected ? 'selected="selected"' : '' ?>><?php esc_attr($products[$i][0]) . " - " . esc_attr($products[$i][1]) ?></option>
                                 <?php
                                 }
                                 ?>
@@ -620,7 +619,7 @@ function wc_sendsms_campaign()
                         </p>
                     </div>
                     <div style="width: 48%; float: left;">
-                        <p><?= __('Billing County (leave blank to select all counties):', 'wc_sendsms') ?>
+                        <p><?php echo esc_html('Billing County (leave blank to select all counties):', 'sendsms') ?>
                             <select id="judete_selectate" name="judete[]" multiple="multiple" style="width:80%;max-width:25em;">
                                 <?php
                                 for ($i = 0; $i < count($billing_states); $i++) {
@@ -634,7 +633,7 @@ function wc_sendsms_campaign()
                                         }
                                     }
                                 ?>
-                                    <option value="<?= "id_" . esc_attr($billing_states[$i]->meta_value) ?>" <?= $selected ? 'selected="selected"' : '' ?>><?= esc_attr($billing_states[$i]->meta_value) ?></option>
+                                    <option value="<?php "id_" . esc_attr($billing_states[$i]->meta_value) ?>" <?php $selected ? 'selected="selected"' : '' ?>><?php esc_attr($billing_states[$i]->meta_value) ?></option>
                                 <?php
                                 }
                                 ?>
@@ -644,13 +643,13 @@ function wc_sendsms_campaign()
                 </div>
             </div>
             <div style="width: 100%; clear: both;">
-                <button type="submit" class="button button-default button-large aligncenter" value="filter"><?= __('Filter', 'wc_sendsms') ?></button>
+                <button type="submit" class="button button-default button-large aligncenter" value="filter"><?php echo esc_html('Filter', 'sendsms') ?></button>
             </div>
         </form>
 
 
         <hr />
-        <h3><?= __('Filter results:', 'wc_sendsms') ?> <?= count($phones) ?> <?= __('phone number(s)', 'wc_sendsms') ?></h3>
+        <h3><?php echo esc_html('Filter results:', 'sendsms') ?> <?php echo count($phones) ?> <?php echo esc_html('phone number(s)', 'sendsms') ?></h3>
 
         <!-- Send campaign form -->
         <form method="POST" action="">
@@ -658,23 +657,23 @@ function wc_sendsms_campaign()
             <input type="hidden" name="action" value="send_campaign" />
             <div style="width: 100%; clear: both; padding-top: 20px;">
                 <div style="width: 73%; float: left">
-                    <div><?= __('Message:', 'wc_sendsms') ?> <br />
+                    <div><?php echo esc_html('Message:', 'sendsms') ?> <br />
                         <textarea name="content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 90%; height: 250px;"></textarea>
-                        <p><?= __('The field is empty', 'wc_sendsms') ?></p>
+                        <p><?php echo esc_html('The field is empty', 'sendsms') ?></p>
                     </div>
                 </div>
                 <div style="width: 25%; float: left">
-                    <p><?= __('Phone numbers:', 'wc_sendsms') ?> <br /></p>
+                    <p><?php echo esc_html('Phone numbers:', 'sendsms') ?> <br /></p>
                     <div style="margin-bottom: 10px">
                         <input type="checkbox" id="wc_sendsms_to_all" class="wc_sendsms_to_all" name="wc_sendsms_to_all" checked />
-                        <?= __('Send SMS to every number.', 'wc_sendsms') ?></label>
+                        <?php echo esc_html('Send SMS to every number.', 'sendsms') ?></label>
                     </div>
-                    <select name="phones[]" id="phones" multiple="MULTIPLE" style="width: 90%; height: 250px" size="<?= empty($phones) ? 0 : count($phones) ?>">
+                    <select name="phones[]" id="phones" multiple="MULTIPLE" style="width: 90%; height: 250px" size="<?php empty($phones) ? 0 : count($phones) ?>">
                         <?php
                         if (!empty($phones)) :
                             foreach ($phones as $phone) :
                         ?>
-                                <option value="<?= $phone ?>" selected><?= $phone ?></option>
+                                <option value="<?php $phone ?>" selected><?php $phone ?></option>
                         <?php
                             endforeach;
                         endif;
@@ -683,12 +682,12 @@ function wc_sendsms_campaign()
                 </div>
             </div>
             <p style="clear: both;">
-                <button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign"><?= __('Send the message', 'wc_sendsms') ?></button>
-                <button type="button" class="button button-primary button-large" name="action" value="estimate_price" id="wc_sendsms_send_campaign_estimate_price"><?= __('Estimate the price', 'wc_sendsms') ?></button>
+                <button type="submit" class="button button-primary button-large" id="wc_sendsms_send_campaign"><?php echo esc_html('Send the message', 'sendsms') ?></button>
+                <button type="button" class="button button-primary button-large" name="action" value="estimate_price" id="wc_sendsms_send_campaign_estimate_price"><?php echo esc_html('Estimate the price', 'sendsms') ?></button>
             </p>
         </form>
     </div>
-    <?= wc_sendsms_javascript_estimate_price(); //just add the check price as a separated function
+    <?php wc_sendsms_javascript_estimate_price(); //just add the check price as a separated function
     ?>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", (event) => {
@@ -708,9 +707,9 @@ function wc_sendsms_campaign()
                     if (lenght % 160 === 0) {
                         messages--;
                     }
-                    counter.textContent = "<?= __('The approximate number of messages: ', 'wc_sendsms'); ?>" + Math.floor(messages) + " (" + lenght + ")";
+                    counter.textContent = "<?php echo esc_html('The approximate number of messages: ', 'sendsms'); ?>" + Math.floor(messages) + " (" + lenght + ")";
                 } else {
-                    counter.textContent = "<?= __('The field is empty', 'wc_sendsms'); ?>";
+                    counter.textContent = "<?php echo esc_html('The field is empty', 'sendsms'); ?>";
                 }
             }
         });
@@ -723,17 +722,17 @@ function wc_sendsms_javascript_send()
     <script type="text/javascript">
         jQuery(document).ready(function($) {
             jQuery('#wc_sendsms_send_campaign').on('click', function() {
-                jQuery('#wc_sendsms_send_campaign').html("<?= __('It\'s being sent...', 'wc_sendsms') ?>");
+                jQuery('#wc_sendsms_send_campaign').html("<?php echo esc_html('It\'s being sent...', 'sendsms') ?>");
                 jQuery('#wc_sendsms_send_campaign').attr('disabled', 'disabled');
                 all = jQuery('#wc_sendsms_to_all').is(":checked");
                 if (all) {
                     phones = '';
-                    produse = <?= isset($_GET['produse']) ? json_encode($_GET['produse']) : "[]" ?>;
-                    judete = <?= isset($_GET['judete']) ? json_encode($_GET['judete']) : "[]" ?>;
-                    suma = "<?= isset($_GET['suma']) ? $_GET['suma'] : "" ?>";
-                    perioada_final = "<?= isset($_GET['perioada_final']) ? $_GET['perioada_final'] : "" ?>";
-                    perioada_start = "<?= isset($_GET['perioada_start']) ? $_GET['perioada_start'] : "" ?>";
-                    filtering = "<?= isset($_REQUEST['filtering']) ? true : false ?>";
+                    produse = <?php isset($_GET['produse']) ? json_encode($_GET['produse']) : "[]" ?>;
+                    judete = <?php isset($_GET['judete']) ? json_encode($_GET['judete']) : "[]" ?>;
+                    suma = "<?php isset($_GET['suma']) ? wc_sendsms_sanitize_float($_GET['suma']) : "" ?>";
+                    perioada_final = "<?php isset($_GET['perioada_final']) ? wc_sendsms_sanitize_event_time($_GET['perioada_final']) : "" ?>";
+                    perioada_start = "<?php isset($_GET['perioada_start']) ? wc_sendsms_sanitize_event_time($_GET['perioada_start']) : "" ?>";
+                    filtering = "<?php isset($_REQUEST['filtering']) ? true : false ?>";
                 } else {
                     phones = jQuery('#phones').val().join("|");
                     produse = "";
@@ -744,7 +743,7 @@ function wc_sendsms_javascript_send()
                     filtering = "";
                 }
                 var data = {
-                    'security': '<?= wp_create_nonce('wc_sendsms_send_campaign') ?>',
+                    'security': '<?php wp_create_nonce('wc_sendsms_send_campaign') ?>',
                     'action': 'wc_sendsms_campaign',
                     'all': all,
                     'phones': phones,
@@ -759,7 +758,7 @@ function wc_sendsms_javascript_send()
                     // 'gdpr': jQuery('#wc_sendsms_gdpr').is(":checked")
                 };
                 jQuery.post(ajaxurl, data, function(response) {
-                    jQuery('#wc_sendsms_send_campaign').html('<?= __('Send the message', 'wc_sendsms') ?>');
+                    jQuery('#wc_sendsms_send_campaign').html('<?php echo esc_html('Send the message', 'sendsms') ?>');
                     jQuery('#wc_sendsms_send_campaign').removeAttr('disabled');
                     alert(response);
                 });
@@ -804,15 +803,24 @@ function wc_sendsms_ajax_send()
         } else {
             $phones = explode("|", $_POST['phones']);
             if (count($phones) === 0) {
-                echo __('You must choose at least one phone number.', 'wc_sendsms');
+                echo esc_html('You must choose at least one phone number.', 'sendsms');
                 wp_die();
             }
         }
     } else {
-        echo __('You must complete the message first.', 'wc_sendsms');
+        echo esc_html('You must complete the message first.', 'sendsms');
         wp_die();
     }
     global $pluginDir;
+    global $wp_filesystem;
+
+    // Initialize the WP_Filesystem if it isn't already
+    if (!function_exists('WP_Filesystem')) {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+    }
+
+    WP_Filesystem();
+    
     if ($file = fopen("$pluginDir/batches/batch.csv", "w")) {
         $options = get_option('wc_sendsms_plugin_options');
         $username = '';
@@ -821,13 +829,13 @@ function wc_sendsms_ajax_send()
         if (!empty($options) && is_array($options) && isset($options['username'])) {
             $username = $options['username'];
         } else {
-            echo __('You did not enter a username', 'wc_sendsms');
+            echo esc_html('You did not enter a username', 'sendsms');
             wp_die();
         }
         if (!empty($options) && is_array($options) && isset($options['password'])) {
             $password = $options['password'];
         } else {
-            echo __('You have not entered a password', 'wc_sendsms');
+            echo esc_html('You have not entered a password', 'sendsms');
             wp_die();
         }
         if (!empty($options) && is_array($options) && isset($options['from'])) {
@@ -872,24 +880,24 @@ function wc_sendsms_ajax_send()
                 (`phone`, `status`, `message`, `details`, `content`, `type`, `sent_on`)
                 VALUES ( %s, %s, %s, %s, %s, %s, %s)
             ",
-                __("Go to hub.sendsms.ro", 'wc_sendsms'),
+                esc_html("Go to hub.sendsms.ro", 'sendsms'),
                 isset($results['status']) ? $results['status'] : '',
                 isset($results['message']) ? $results['message'] : '',
                 isset($results['details']) ? $results['details'] : '',
-                __("We created your campaign. Go and check the batch called: ", 'wc_sendsms') . $name,
-                __("Batch Campaign", 'wc_sendsms'),
+                esc_html("We created your campaign. Go and check the batch called: ", 'sendsms') . $name,
+                esc_html("Batch Campaign", 'sendsms'),
                 date('Y-m-d H:i:s')
             )
         );
         fclose($file);
         if (!unlink("$pluginDir/batches/batch.csv")) {
-            echo "Unable to delete previous batch file! Please check file/folder permisions ($pluginDir/batches/batch.csv)";
+            echo esc_html("Unable to delete previous batch file! Please check file/folder permisions ($pluginDir/batches/batch.csv)");
             wp_die();
         }
-        echo __("Success", "wc_sendsms");
+        echo esc_html("Success", 'sendsms');
         wp_die();
     } else {
-        echo "Unable to open/create batch file! Please check file/folder permisions ($pluginDir/batches/batch.csv)";
+        echo esc_html("Unable to open/create batch file! Please check file/folder permisions ($pluginDir/batches/batch.csv)");
         wp_die();
     }
 }
@@ -915,14 +923,14 @@ function wc_sendsms_javascript_estimate_price()
                         messages--
                     }
                     messages = Math.floor(messages);
-                    price = <?= get_option('wc-sendsms-default-price', 0) ?>;
+                    price = <?php get_option('wc-sendsms-default-price', 0) ?>;
                     if (price > 0) {
-                        alert("<?= __('The estimate price is: ', 'wc_sendsms') ?>" + parseFloat(messages * price * phones).toPrecision(4) + "<?= __(' (This is just an estimation, and not the actual price)', 'wc_sendsms') ?>");
+                        alert("<?php echo esc_html('The estimate price is: ', 'sendsms') ?>" + parseFloat(messages * price * phones).toPrecision(4) + "<?php echo esc_html(' (This is just an estimation, and not the actual price)', 'sendsms') ?>");
                     } else {
-                        alert("<?= __('Please send a message first', 'wc_sendsms') ?>");
+                        alert("<?php echo esc_html('Please send a message first', 'sendsms') ?>");
                     }
                 } else {
-                    alert("<?= __('Please fill the message box first', 'wc_sendsms') ?>")
+                    alert("<?php echo esc_html('Please fill the message box first', 'sendsms') ?>")
                 }
             });
         });
@@ -936,7 +944,7 @@ function wc_sendsms_history()
 {
 ?>
     <div class="wrap">
-        <h2><?= __('SendSMS - Historic', 'wc_sendsms') ?></h2>
+        <h2><?php echo esc_html('SendSMS - Historic', 'sendsms') ?></h2>
         <form method="get">
             <?php
             $_table_list = new WC_SendSMS_History_List_Table();
@@ -944,7 +952,7 @@ function wc_sendsms_history()
             echo '<input type="hidden" name="page" value="wc_sendsms_history" />';
 
             $_table_list->views();
-            $_table_list->search_box(__('Search', 'wc_sendsms'), 'key');
+            $_table_list->search_box(esc_html('Search', 'sendsms'), 'key');
             $_table_list->display();
             ?>
         </form>
@@ -961,11 +969,11 @@ function wc_sendsms_settings_display_username()
 {
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['username'])) {
-        $username = esc_html($options['username']);
+        $username = $options['username'];
     } else {
         $username = '';
     }
-    echo '<input id="wc_sendsms_settings_username" name="wc_sendsms_plugin_options[username]" type="text" value="' . $username . '" style="width: 400px;" />';
+    echo '<input id="wc_sendsms_settings_username" name="wc_sendsms_plugin_options[username]" type="text" value="' . esc_html($username) . '" style="width: 400px;" />';
 }
 
 function wc_sendsms_settings_display_password()
@@ -973,22 +981,22 @@ function wc_sendsms_settings_display_password()
     $options = get_option('wc_sendsms_plugin_options');
 
     if (!empty($options) && is_array($options) && isset($options['password'])) {
-        $password = esc_html($options['password']);
+        $password = $options['password'];
     } else {
         $password = '';
     }
-    echo '<input id="wc_sendsms_settings_password" name="wc_sendsms_plugin_options[password]" type="password" value="' . $password . '" style="width: 400px;" />';
+    echo '<input id="wc_sendsms_settings_password" name="wc_sendsms_plugin_options[password]" type="password" value="' . esc_html($password) . '" style="width: 400px;" />';
 }
 
 function wc_sendsms_settings_display_from()
 {
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['from'])) {
-        $from = esc_html($options['from']);
+        $from = $options['from'];
     } else {
         $from = '';
     }
-    echo '<input id="wc_sendsms_settings_from" name="wc_sendsms_plugin_options[from]" type="text" value="' . $from . '" style="width: 400px;" /> <span>' . __('maximum 11 alpha-numeric characters', 'wc_sendsms') . '</span>';
+    echo '<input id="wc_sendsms_settings_from" name="wc_sendsms_plugin_options[from]" type="text" value="' . esc_html($from) . '" style="width: 400px;" /> <span>' . esc_html('maximum 11 alpha-numeric characters', 'sendsms') . '</span>';
 }
 
 function wc_sendsms_settings_display_cc()
@@ -996,7 +1004,7 @@ function wc_sendsms_settings_display_cc()
     include 'cc.php';
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['cc'])) {
-        $cc = esc_html($options['cc']);
+        $cc = $options['cc'];
     } else {
         $cc = '';
     }
@@ -1005,7 +1013,7 @@ function wc_sendsms_settings_display_cc()
         <option value="INT">International</option>
         <?php
         foreach ($country_codes as $key => $value) {
-            echo "<option value='$key' " . ($cc == $key ? "selected" : "") . ">$key (+$value)</option>";
+            echo "<option value='".esc_html($key)."' " . ($cc == $key ? "selected" : "") . ">".esc_html($key)." (+".esc_html($value).".)</option>";
         }
         ?>
     </select>
@@ -1044,7 +1052,7 @@ function wc_sendsms_settings_display_send_to_owner_short()
         $send_to_owner_short = '';
     }
     echo '<label>
-    <input id="wc_sendsms_settings_send_to_owner_short" name="wc_sendsms_plugin_options[send_to_owner_short]" type="checkbox" value="1" ' . (!empty($send_to_owner_short) ? 'checked="checked"' : '') . ' />' . __('Please use only links starting with https:// or http://', 'wc_sendsms') . '</label>';
+    <input id="wc_sendsms_settings_send_to_owner_short" name="wc_sendsms_plugin_options[send_to_owner_short]" type="checkbox" value="1" ' . esc_html(!empty($send_to_owner_short) ? 'checked="checked"' : '') . ' />' . esc_html('Please use only links starting with https:// or http://', 'sendsms') . '</label>';
 }
 
 function wc_sendsms_settings_display_send_to_owner_gdpr()
@@ -1056,7 +1064,7 @@ function wc_sendsms_settings_display_send_to_owner_gdpr()
         $send_to_owner_gdpr = '';
     }
     echo '<label>
-    <input id="wc_sendsms_settings_send_to_owner_gdpr" name="wc_sendsms_plugin_options[send_to_owner_gdpr]" type="checkbox" value="1" ' . (!empty($send_to_owner_gdpr) ? 'checked="checked"' : '') . ' />' . __('You must specify the key message {gdpr}. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.', 'wc_sendsms') . '</label>';
+    <input id="wc_sendsms_settings_send_to_owner_gdpr" name="wc_sendsms_plugin_options[send_to_owner_gdpr]" type="checkbox" value="1" ' . esc_html(!empty($send_to_owner_gdpr) ? 'checked="checked"' : '') . ' />' . esc_html('You must specify the key message {gdpr}. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.', 'sendsms') . '</label>';
 }
 
 function wc_sendsms_settings_display_simulation_number()
@@ -1068,19 +1076,19 @@ function wc_sendsms_settings_display_simulation_number()
         $number = '';
     }
     echo '
-    <input id="wc_sendsms_settings_simulation_number" name="wc_sendsms_plugin_options[simulation_number]" type="text" value="' . $number . '" style="width: 400px;" />';
+    <input id="wc_sendsms_settings_simulation_number" name="wc_sendsms_plugin_options[simulation_number]" type="text" value="' . esc_html($number) . '" style="width: 400px;" />';
 }
 
 function wc_sendsms_settings_display_send_to_owner_number()
 {
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['send_to_owner_number'])) {
-        $number = esc_html($options['send_to_owner_number']);
+        $number = $options['send_to_owner_number'];
     } else {
         $number = '';
     }
     echo '
-    <input id="wc_sendsms_settings_send_to_owner_number" name="wc_sendsms_plugin_options[send_to_owner_number]" type="text" value="' . $number . '" style="width: 400px;" />';
+    <input id="wc_sendsms_settings_send_to_owner_number" name="wc_sendsms_plugin_options[send_to_owner_number]" type="text" value="' . esc_html($number) . '" style="width: 400px;" />';
 }
 
 function wc_sendsms_settings_display_optout()
@@ -1097,17 +1105,17 @@ function wc_sendsms_settings_display_optout()
 
 function wc_sendsms_settings_display_send_to_owner_content()
 {
-    echo '<p>' . __('Variable available:', 'wc_sendsms') . ' {billing_first_name}, {billing_last_name}, {shipping_first_name}, {shipping_last_name}, {order_number}, {order_date}, {order_total}</p><br />';
+    echo '<p>' . esc_html('Variable available:', 'sendsms') . ' {billing_first_name}, {billing_last_name}, {shipping_first_name}, {shipping_last_name}, {order_number}, {order_date}, {order_total}</p><br />';
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['send_to_owner_content'])) {
-        $content = esc_html($options['send_to_owner_content']);
+        $content = $options['send_to_owner_content'];
     } else {
         $content = "";
     }
 
     echo '<div style="width: 100%; clear: both;">
             <div style="width: 45%; float: left">
-                <textarea id="wc_sendsms_settings_send_to_owner_content" name="wc_sendsms_plugin_options[send_to_owner_content]" style="width: 400px; height: 100px;" class="wc_sendsms_content">' . (!empty($content) ? $content : '') . '</textarea>
+                <textarea id="wc_sendsms_settings_send_to_owner_content" name="wc_sendsms_plugin_options[send_to_owner_content]" style="width: 400px; height: 100px;" class="wc_sendsms_content">' . esc_html(!empty($content) ? $content : '') . '</textarea>
                 <p></p>
             </div>
             <div style="width: 45%; float: left">
@@ -1122,15 +1130,15 @@ function wc_sendsms_settings_display_enabled()
 function wc_sendsms_settings_display_content()
 {
     $examples = array(
-        'wc-pending' => __('The order with the number {order_number} has been placed successfully and will be shipped as soon as we receive your payment in the amount of {order_total} EURO. sitename.com', 'wc_sendsms'),
-        'wc-processing' => __('The order with the number {order_number} is being processed and is to be delivered. sitename.com', 'wc_sendsms'),
-        'wc-on-hold' => __('The order with the number {order_number} is pending, one or more products are missing', 'wc_sendsms'),
-        'wc-completed' => __('The order {order_number} has been prepared and will be delivered to the Courier. Payment: {order_total} LEI. Thank you, sitename.com', 'wc_sendsms'),
-        'wc-cancelled' => __('The order with the number {order_number} has been canceled. For details: sitename.com', 'wc_sendsms'),
-        'wc-refunded' => __('Refund request for order {order_number} has been completed.', 'wc_sendsms'),
-        'wc-failed' => __('There is a problem processing the payment for the order with the number {order_number}. Please contact us.', 'wc_sendsms')
+        'wc-pending' => __('The order with the number {order_number} has been placed successfully and will be shipped as soon as we receive your payment in the amount of {order_total} EURO. sitename.com', 'sendsms'),
+        'wc-processing' => __('The order with the number {order_number} is being processed and is to be delivered. sitename.com', 'sendsms'),
+        'wc-on-hold' => __('The order with the number {order_number} is pending, one or more products are missing', 'sendsms'),
+        'wc-completed' => __('The order {order_number} has been prepared and will be delivered to the Courier. Payment: {order_total} LEI. Thank you, sitename.com', 'sendsms'),
+        'wc-cancelled' => __('The order with the number {order_number} has been canceled. For details: sitename.com', 'sendsms'),
+        'wc-refunded' => __('Refund request for order {order_number} has been completed.', 'sendsms'),
+        'wc-failed' => __('There is a problem processing the payment for the order with the number {order_number}. Please contact us.', 'sendsms')
     );
-    echo '<p>' . __('Variable available:', 'wc_sendsms') . ' {billing_first_name}, {billing_last_name}, {shipping_first_name}, {shipping_last_name}, {order_number}, {order_date}, {order_total}</p><br />';
+    echo '<p>' . esc_html('Variable available:', 'sendsms') . ' {billing_first_name}, {billing_last_name}, {shipping_first_name}, {shipping_last_name}, {order_number}, {order_date}, {order_total}</p><br />';
     $options = get_option('wc_sendsms_plugin_options');
     if (!empty($options) && is_array($options) && isset($options['content'])) {
         $content = $options['content'];
@@ -1171,18 +1179,18 @@ function wc_sendsms_settings_display_content()
             $gdprChecked = true;
         }
 
-        echo '  <p style="clear: both; padding-top: 10px;">' . __('Message: ', 'wc_sendsms') . $value . '</p><p><label><input type="checkbox" name="wc_sendsms_plugin_options[enabled][' . $key . ']" value="1" ' . ($checked ? 'checked="checked"' : '') . ' /> ' . __('Activated', 'wc_sendsms') . '</label></p>
-                <label style="width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[short][' . $key . ']" value="1" ' . ($shortChecked ? 'checked="checked"' : '') . ' />' . __('Short URL? (Please use only links starting with https:// or http://)', 'wc_sendsms') . '</label>
-                <label style="display:block; width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[gdpr][' . $key . ']" value="1" ' . ($gdprChecked ? 'checked="checked"' : '') . ' />' . __('Add unsubscribe link? (You must specify the {gdpr} key message. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.)', 'wc_sendsms') . '</label>
+        echo '  <p style="clear: both; padding-top: 10px;">' . esc_html('Message: ', 'sendsms') . esc_html($value) . '</p><p><label><input type="checkbox" name="wc_sendsms_plugin_options[enabled][' . esc_html($key) . ']" value="1" ' . ($checked ? 'checked="checked"' : '') . ' /> ' . esc_html('Activated', 'sendsms') . '</label></p>
+                <label style="width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[short][' . esc_html($key) . ']" value="1" ' . ($shortChecked ? 'checked="checked"' : '') . ' />' . esc_html('Short URL? (Please use only links starting with https:// or http://)', 'sendsms') . '</label>
+                <label style="display:block; width:40%;"><input type="checkbox" name="wc_sendsms_plugin_options[gdpr][' . esc_html($key) . ']" value="1" ' . ($gdprChecked ? 'checked="checked"' : '') . ' />' . esc_html('Add unsubscribe link? (You must specify the {gdpr} key message. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.)', 'sendsms') . '</label>
         <div style="width: 100%; clear: both;">
             <div style="width: 45%; float: left">
-                <textarea id="wc_sendsms_settings_content_' . $key . '" name="wc_sendsms_plugin_options[content][' . $key . ']" style="width: 400px; height: 100px;" class="wc_sendsms_content">' . (isset($content[$key]) ? $content[$key] : '') . '</textarea>
+                <textarea id="wc_sendsms_settings_content_' . esc_html($key) . '" name="wc_sendsms_plugin_options[content][' . esc_html($key) . ']" style="width: 400px; height: 100px;" class="wc_sendsms_content">' . esc_html(isset($content[$key]) ? $content[$key] : '') . '</textarea>
                 <p></p>
             </div>
             <div style="width: 45%; float: left">
             ';
         if (isset($examples[$key])) {
-            echo __('Example: ', 'wc_sendsms') . $examples[$key];
+            echo esc_html('Example: ', 'sendsms') . esc_html($examples[$key]);
         }
         echo '
             </div>
@@ -1215,10 +1223,10 @@ function wc_sendsms_settings_display_content()
                                 {
                                     messages--;
                                 }
-                                counter.textContent = "' . __('The approximate number of messages: ', 'wc_sendsms') . '" + Math.floor(messages) + " (" + lenght + ")";
+                                counter.textContent = "' . esc_html('The approximate number of messages: ', 'sendsms') . '" + Math.floor(messages) + " (" + lenght + ")";
                             }else
                             {
-                                counter.textContent = "' . __('The field is empty', 'wc_sendsms') . '";
+                                counter.textContent = "' . esc_html('The field is empty', 'sendsms') . '";
                             }
                         }
                     };
@@ -1318,7 +1326,7 @@ function wc_sendsms_order_details_meta_box()
 {
     add_meta_box(
         'wc_sendsms_meta_box',
-        __('Send SMS', 'wc_sendsms'),
+        __('Send SMS', 'sendsms'),
         'wc_sendsms_order_details_sms_box',
         'shop_order',
         'side',
@@ -1329,19 +1337,19 @@ function wc_sendsms_order_details_meta_box()
 function wc_sendsms_order_details_sms_box($post)
 {
     ?>
-        <input type="hidden" name="wc_sendsms_order_id" id="wc_sendsms_order_id" value="<?= $post->ID ?>" />
-        <p><?= __('Phone:', 'wc_sendsms') ?></p>
+        <input type="hidden" name="wc_sendsms_order_id" id="wc_sendsms_order_id" value="<?php $post->ID ?>" />
+        <p><?php echo esc_html('Phone:', 'sendsms') ?></p>
         <p><input type="text" name="wc_sendsms_phone" id="wc_sendsms_phone" style="width: 100%" /></p>
-        <p><?= __('Short URL? (Please use only links starting with https:// or http://)', 'wc_sendsms') ?></p>
+        <p><?php echo esc_html('Short URL? (Please use only links starting with https:// or http://)', 'sendsms') ?></p>
         <p><input type="checkbox" name="wc_sendsms_short" id="wc_sendsms_short" /></p>
-        <p><?= __('Add unsubscribe link? (You must specify the {gdpr} key message. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.)', 'wc_sendsms') ?></p>
+        <p><?php echo esc_html('Add unsubscribe link? (You must specify the {gdpr} key message. The {gdpr} key will be automatically replaced with the unique confirmation link. If the {gdpr} key is not specified, the confirmation link will be placed at the end of the message.)', 'sendsms') ?></p>
         <p><input type="checkbox" name="wc_sendsms_gdpr" id="wc_sendsms_gdpr" /></p>
-        <p><?= __('Message:', 'wc_sendsms') ?></p>
+        <p><?php echo esc_html('Message:', 'sendsms') ?></p>
         <div>
             <textarea name="wc_sendsms_content" class="wc_sendsms_content" id="wc_sendsms_content" style="width: 100%; height: 100px;"></textarea>
-            <p><?= __('The field is empty', 'wc_sendsms') ?></p>
+            <p><?php echo esc_html('The field is empty', 'sendsms') ?></p>
         </div>
-        <p><button type="submit" class="button" id="wc_sendsms_send_single"><?= __('Send the message', 'wc_sendsms') ?></button></p>
+        <p><button type="submit" class="button" id="wc_sendsms_send_single"><?php echo esc_html('Send the message', 'sendsms') ?></button></p>
         <script type="text/javascript">
             document.addEventListener("DOMContentLoaded", (event) => {
                 var wc_sendsms_content = document.getElementsByClassName('wc_sendsms_content')[0];
@@ -1360,9 +1368,9 @@ function wc_sendsms_order_details_sms_box($post)
                         if (lenght % 160 === 0) {
                             messages--;
                         }
-                        counter.textContent = "<?= __('The approximate number of messages: ', 'wc_sendsms'); ?>" + Math.floor(messages) + " (" + lenght + ")";
+                        counter.textContent = "<?php echo esc_html('The approximate number of messages: ', 'sendsms'); ?>" + Math.floor(messages) + " (" + lenght + ")";
                     } else {
-                        counter.textContent = "<?= __('The field is empty', 'wc_sendsms'); ?>";
+                        counter.textContent = "<?php echo esc_html('The field is empty', 'sendsms'); ?>";
                     }
                 }
             });
@@ -1375,7 +1383,7 @@ function wc_sendsms_javascript_send_single()
         <script type="text/javascript">
             jQuery(document).ready(function($) {
                 jQuery('#wc_sendsms_send_single').on('click', function() {
-                    jQuery('#wc_sendsms_send_single').html("<?= __('It\'s being sent...', 'wc_sendsms') ?>");
+                    jQuery('#wc_sendsms_send_single').html("<?php echo esc_html('It\'s being sent...', 'sendsms') ?>");
                     jQuery('#wc_sendsms_send_single').attr('disabled', 'disabled');
                     var data = {
                         'action': 'wc_sendsms_single',
@@ -1387,7 +1395,7 @@ function wc_sendsms_javascript_send_single()
                     };
 
                     jQuery.post(ajaxurl, data, function(response) {
-                        jQuery('#wc_sendsms_send_single').html('<?= __('Send the message', 'wc_sendsms') ?>');
+                        jQuery('#wc_sendsms_send_single').html('<?php __('Send the message', 'sendsms') ?>');
                         jQuery('#wc_sendsms_send_single').removeAttr('disabled');
                         jQuery('#wc_sendsms_phone').val('');
                         jQuery('#wc_sendsms_content').val('');
@@ -1413,13 +1421,13 @@ function wc_sendsms_ajax_send_single()
         if (!empty($options) && is_array($options) && isset($options['username'])) {
             $username = $options['username'];
         } else {
-            echo __('You did not enter a username', 'wc_sendsms');
+            echo esc_html('You did not enter a username', 'sendsms');
             wp_die();
         }
         if (!empty($options) && is_array($options) && isset($options['password'])) {
             $password = $options['password'];
         } else {
-            echo __('You did not enter a password', 'wc_sendsms');
+            echo esc_html('You did not enter a password', 'sendsms');
             wp_die();
         }
         if (!empty($options) && is_array($options) && isset($options['from'])) {
@@ -1431,11 +1439,11 @@ function wc_sendsms_ajax_send_single()
         if (!empty($phone)) {
             wc_sendsms_send($username, $password, $phone, sanitize_textarea_field($_POST['content']), $from, 'single order', $short, $gdpr);
             $order = new WC_Order(wc_sendsms_sanitize_float($_POST['order']));
-            $order->add_order_note(__('SMS message sent to ', 'wc_sendsms') . $phone . ': ' . sanitize_textarea_field($_POST['content']));
+            $order->add_order_note(__('SMS message sent to ', 'sendsms') . $phone . ': ' . sanitize_textarea_field($_POST['content']));
         }
-        echo __('The message was sent', 'wc_sendsms');
+        echo esc_html('The message was sent', 'sendsms');
     } else {
-        echo __('You must complete the message and a phone number', 'wc_sendsms');
+        echo esc_html('You must complete the message and a phone number', 'sendsms');
     }
     wp_die();
 }
@@ -1752,7 +1760,7 @@ function wc_sendsms_randomNumberSequence($requiredLength = 7, $highestDigit = 8)
 {
     $sequence = '';
     for ($i = 0; $i < $requiredLength; ++$i) {
-        $sequence .= mt_rand(0, $highestDigit);
+        $sequence .= wp_rand(0, $highestDigit);
     }
     return $sequence;
 }
